@@ -1,6 +1,6 @@
-import { useState, FormEvent } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { UserPlus, Mail, Lock, User } from 'lucide-react';
+import { useState, FormEvent } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { UserPlus, Mail, Lock, User } from "lucide-react";
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -8,26 +8,30 @@ interface RegisterProps {
   onNavigate: (page: string) => void;
 }
 
-export default function Register({ onSwitchToLogin, onRegisterSuccess, onNavigate }: RegisterProps) {
+export default function Register({
+  onSwitchToLogin,
+  onRegisterSuccess,
+  onNavigate,
+}: RegisterProps) {
   const { signUp } = useAuth();
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (password !== confirmPassword) {
-      setError('Пароли не совпадают');
+      setError("Пароли не совпадают");
       return;
     }
 
     if (password.length < 6) {
-      setError('Пароль должен содержать не менее 6 символов');
+      setError("Пароль должен содержать не менее 6 символов");
       return;
     }
 
@@ -51,7 +55,9 @@ export default function Register({ onSwitchToLogin, onRegisterSuccess, onNavigat
             <UserPlus className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Создать аккаунт</h2>
-          <p className="text-gray-600 mt-2">Присоединяйтесь к порталу строительных материалов СтройМаркет</p>
+          <p className="text-gray-600 mt-2">
+            Присоединяйтесь к порталу строительных материалов КовачМаркет
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -134,7 +140,7 @@ export default function Register({ onSwitchToLogin, onRegisterSuccess, onNavigat
             disabled={loading}
             className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Создание аккаунта...' : 'Создать аккаунт'}
+            {loading ? "Создание аккаунта..." : "Создать аккаунт"}
           </button>
 
           <div className="text-center space-y-2">
@@ -151,7 +157,7 @@ export default function Register({ onSwitchToLogin, onRegisterSuccess, onNavigat
             <div>
               <button
                 type="button"
-                onClick={() => onNavigate('home')}
+                onClick={() => onNavigate("home")}
                 className="text-gray-500 font-medium hover:text-gray-700 transition text-sm"
               >
                 Вернуться на главную

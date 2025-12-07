@@ -1,7 +1,15 @@
-import { useAuth } from '../contexts/AuthContext';
-import { Building2, ShoppingCart, User, LogOut, Wrench, Package, Settings } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useAuth } from "../contexts/AuthContext";
+import {
+  Building2,
+  ShoppingCart,
+  User,
+  LogOut,
+  Wrench,
+  Package,
+  Settings,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
 interface HeaderProps {
   onNavigate: (page: string) => void;
@@ -24,9 +32,9 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
     if (!user) return;
 
     const { data } = await supabase
-      .from('cart_items')
-      .select('quantity')
-      .eq('user_id', user.id);
+      .from("cart_items")
+      .select("quantity")
+      .eq("user_id", user.id);
 
     if (data) {
       const total = data.reduce((sum, item) => sum + item.quantity, 0);
@@ -36,7 +44,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    onNavigate('home');
+    onNavigate("home");
   };
 
   return (
@@ -44,41 +52,41 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <button
-            onClick={() => onNavigate('home')}
+            onClick={() => onNavigate("home")}
             className="flex items-center space-x-2 hover:opacity-80 transition"
           >
             <Building2 className="w-8 h-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">СтройМаркет</span>
+            <span className="text-xl font-bold text-gray-900">КовачМаркет</span>
           </button>
 
           <nav className="hidden md:flex items-center space-x-1">
             <button
-              onClick={() => onNavigate('home')}
+              onClick={() => onNavigate("home")}
               className={`px-4 py-2 rounded-lg font-medium transition ${
-                currentPage === 'home'
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-100'
+                currentPage === "home"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               Главная
             </button>
             <button
-              onClick={() => onNavigate('products')}
+              onClick={() => onNavigate("products")}
               className={`px-4 py-2 rounded-lg font-medium transition flex items-center space-x-1 ${
-                currentPage === 'products'
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-100'
+                currentPage === "products"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <Package className="w-4 h-4" />
               <span>Материалы</span>
             </button>
             <button
-              onClick={() => onNavigate('equipment')}
+              onClick={() => onNavigate("equipment")}
               className={`px-4 py-2 rounded-lg font-medium transition flex items-center space-x-1 ${
-                currentPage === 'equipment'
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-100'
+                currentPage === "equipment"
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <Wrench className="w-4 h-4" />
@@ -90,7 +98,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             {user ? (
               <>
                 <button
-                  onClick={() => onNavigate('cart')}
+                  onClick={() => onNavigate("cart")}
                   className="relative p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
                 >
                   <ShoppingCart className="w-6 h-6" />
@@ -102,11 +110,11 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 </button>
                 {isAdmin && (
                   <button
-                    onClick={() => onNavigate('admin')}
+                    onClick={() => onNavigate("admin")}
                     className={`p-2 rounded-lg transition flex items-center space-x-2 ${
-                      currentPage === 'admin'
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-700 hover:bg-gray-100'
+                      currentPage === "admin"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-100"
                     }`}
                     title="Панель администратора"
                   >
@@ -115,15 +123,17 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   </button>
                 )}
                 <button
-                  onClick={() => onNavigate('cabinet')}
+                  onClick={() => onNavigate("cabinet")}
                   className={`p-2 rounded-lg transition flex items-center space-x-2 ${
-                    currentPage === 'cabinet'
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-100'
+                    currentPage === "cabinet"
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   <User className="w-6 h-6" />
-                  <span className="hidden md:inline font-medium">{profile?.full_name}</span>
+                  <span className="hidden md:inline font-medium">
+                    {profile?.full_name}
+                  </span>
                 </button>
                 <button
                   onClick={handleSignOut}
@@ -135,7 +145,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               </>
             ) : (
               <button
-                onClick={() => onNavigate('login')}
+                onClick={() => onNavigate("login")}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
               >
                 Войти
