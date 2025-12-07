@@ -40,6 +40,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       categories: {
         Row: {
@@ -63,6 +64,7 @@ export interface Database {
           type?: 'product' | 'equipment'
           created_at?: string
         }
+        Relationships: []
       }
       products: {
         Row: {
@@ -104,6 +106,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       equipment: {
         Row: {
@@ -142,6 +145,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       orders: {
         Row: {
@@ -174,6 +178,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -200,6 +205,7 @@ export interface Database {
           unit_price?: number
           subtotal?: number
         }
+        Relationships: []
       }
       rentals: {
         Row: {
@@ -247,6 +253,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       cart_items: {
         Row: {
@@ -270,7 +277,20 @@ export interface Database {
           quantity?: number
           created_at?: string
         }
+        Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

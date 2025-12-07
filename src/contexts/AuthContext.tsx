@@ -80,12 +80,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) return { error };
 
       if (data.user) {
+        const profileData: Database['public']['Tables']['profiles']['Insert'] = {
+          id: data.user.id,
+          full_name: fullName,
+        };
+
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: fullName,
-          });
+          .insert(profileData);
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
