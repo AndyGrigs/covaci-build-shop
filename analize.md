@@ -345,3 +345,53 @@ Backup і Recovery
 Performance оптимізації (3-5 днів)
 Моніторинг та deployment (2-3 дні)
 Чи потрібна допомога з імплементацією якихось конкретних покращень?
+
+
+Perfect! I've analyzed your codebase and found the solution. Here's what needs to be done:
+Summary
+You already have a migration file ready at supabase/migrations/20251207120000_update_rls_policies_for_public_access.sql that will fix this issue. The frontend code is already properly configured to work without authentication - it only requires login when users try to add items to the cart.
+How to Apply the Fix
+Since the Supabase project isn't linked locally, you need to apply the migration manually through the Supabase Dashboard:
+Option 1: Via Supabase Dashboard (Recommended)
+Go to your Supabase Dashboard at https://supabase.com/dashboard
+Select your project
+Navigate to SQL Editor
+Copy and paste the contents of the migration file:
+-- Update categories policy to allow public read
+DROP POLICY IF EXISTS "Anyone can view categories" ON categories;
+CREATE POLICY "Anyone can view categories" 
+  ON categories FOR SELECT
+  TO PUBLIC
+  USING (true);
+
+-- Update products policy to allow public read for active products
+DROP POLICY IF EXISTS "Anyone can view active products" ON products;
+CREATE POLICY "Anyone can view active products" 
+  ON products FOR SELECT
+  TO PUBLIC
+  USING (is_active = true OR EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true));
+
+-- Update equipment policy to allow public read for available equipment
+DROP POLICY IF EXISTS "Anyone can view available equipment" ON equipment;
+CREATE POLICY "Anyone can view available equipment" 
+  ON equipment FOR SELECT
+  TO PUBLIC
+  USING (is_available = true OR EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.is_admin = true));
+Click Run to execute the SQL
+Option 2: Link Your Supabase Project First
+If you prefer to use the CLI:
+npx supabase login
+npx supabase link --project-ref your-project-ref
+npx supabase db push
+What This Changes
+The migration updates the Row Level Security (RLS) policies to:
+Categories: Allow public (unauthenticated) read access
+Products: Allow public read access to active products
+Equipment: Allow public read access to available equipment
+The policies change from TO authenticated to TO PUBLIC, allowing anyone (including non-logged-in users) to view the product catalog.
+Frontend Behavior
+Your frontend code in src/pages/Products.tsx is already set up correctly:
+Products load without requiring authentication
+Users can browse and search products freely
+Only when clicking "Add to Cart" will it redirect to login (lines 69-72)
+Once you apply this migration, unauthenticated users will be able to see all products from the database!
