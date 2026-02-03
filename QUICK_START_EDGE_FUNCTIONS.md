@@ -8,10 +8,6 @@ scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
 scoop install supabase
 ```
 
-**macOS:**
-```bash
-brew install supabase/tap/supabase
-```
 
 ## 2️⃣ Запустити локально
 
