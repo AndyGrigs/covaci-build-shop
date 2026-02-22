@@ -22,14 +22,14 @@ type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Product = Database["public"]["Tables"]["products"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 type Order = Database["public"]["Tables"]["orders"]["Row"];
-type User = Database["public"]["Tables"]["users"]["Row"];
+type UserRow = { id: string; email: string; created_at: string };
 
 export default function AdminDashboard({
   onNavigate,
 }: {
   onNavigate: (page: string) => void;
 }) {
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<
     "categories" | "products" | "equipment" | "orders" | "users"
   >("categories");
@@ -37,7 +37,7 @@ export default function AdminDashboard({
   const [products, setProducts] = useState<Product[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -110,11 +110,12 @@ export default function AdminDashboard({
     if (ordersData) setOrders(ordersData);
 
     // Load users (just basic info for admin)
-    const { data: usersData } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: usersData } = await (supabase as any)
       .from("users")
       .select("id, email, created_at")
       .order("created_at", { ascending: false });
-    if (usersData) setUsers(usersData);
+    if (usersData) setUsers(usersData as UserRow[]);
 
     setLoading(false);
   };
@@ -1122,7 +1123,7 @@ export default function AdminDashboard({
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              order.status === "completed"
+                              order.status === "delivered"
                                 ? "bg-green-100 text-green-800"
                                 : order.status === "pending"
                                   ? "bg-yellow-100 text-yellow-800"
