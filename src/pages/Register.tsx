@@ -55,26 +55,26 @@ export default function Register({
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Підтвердіть email</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Подтвердите email</h2>
           <p className="text-gray-600 mb-2">
-            Ми надіслали лист на <span className="font-medium text-gray-900">{email}</span>
+            Мы отправили письмо на <span className="font-medium text-gray-900">{email}</span>
           </p>
           <p className="text-gray-500 text-sm mb-6">
-            Натисніть посилання в листі щоб активувати акаунт, після чого зможете увійти.
+            Нажмите на ссылку в письме, чтобы активировать аккаунт, после чего сможете войти.
           </p>
           <button
             type="button"
             onClick={onSwitchToLogin}
             className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition"
           >
-            Перейти до входу
+            Перейти ко входу
           </button>
           <button
             type="button"
             onClick={() => onNavigate("home")}
             className="mt-3 w-full text-gray-500 text-sm hover:text-gray-700 transition"
           >
-            Повернутися на головну
+            Вернуться на главную
           </button>
         </div>
       </div>
