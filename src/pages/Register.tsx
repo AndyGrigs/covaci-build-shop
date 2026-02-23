@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { UserPlus, Mail, Lock, User } from "lucide-react";
+import { UserPlus, Mail, Lock, User, CheckCircle } from "lucide-react";
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -20,6 +20,7 @@ export default function Register({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,9 +44,42 @@ export default function Register({
       setError(signUpError.message);
       setLoading(false);
     } else {
-      onRegisterSuccess();
+      setEmailSent(true);
     }
   };
+
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-8">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+            <CheckCircle className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Підтвердіть email</h2>
+          <p className="text-gray-600 mb-2">
+            Ми надіслали лист на <span className="font-medium text-gray-900">{email}</span>
+          </p>
+          <p className="text-gray-500 text-sm mb-6">
+            Натисніть посилання в листі щоб активувати акаунт, після чого зможете увійти.
+          </p>
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition"
+          >
+            Перейти до входу
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate("home")}
+            className="mt-3 w-full text-gray-500 text-sm hover:text-gray-700 transition"
+          >
+            Повернутися на головну
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 py-8">
