@@ -620,8 +620,7 @@ export default function AdminDashboard({
                     placeholder="Количество на складе"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
-                  <input
-                    type="text"
+                  <select
                     value={newProduct.category_id}
                     onChange={(e) =>
                       setNewProduct({
@@ -629,9 +628,17 @@ export default function AdminDashboard({
                         category_id: e.target.value,
                       })
                     }
-                    placeholder="ID категории"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  />
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories
+                      .filter((c) => c.type === "product")
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </select>
                   {/* <input
                     type="text"
                     value={newProduct.image_url}
@@ -865,8 +872,7 @@ export default function AdminDashboard({
                     placeholder="Депозит"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
-                  <input
-                    type="text"
+                  <select
                     value={newEquipment.category_id}
                     onChange={(e) =>
                       setNewEquipment({
@@ -874,9 +880,17 @@ export default function AdminDashboard({
                         category_id: e.target.value,
                       })
                     }
-                    placeholder="ID категории"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  />
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories
+                      .filter((c) => c.type === "equipment")
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </select>
                   <select
                     value={
                       newEquipment.is_available ? "available" : "unavailable"
