@@ -1129,7 +1129,7 @@ export default function AdminDashboard({
                           {order.user_id.slice(0, 8)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(order.created_at).toLocaleDateString()}
+                          {new Date(order.created_at ?? '').toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           ${order.total_amount.toFixed(2)}

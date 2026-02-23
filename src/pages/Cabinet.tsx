@@ -65,7 +65,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
       .order('created_at', { ascending: false });
 
     if (data) {
-      setOrders(data as Order[]);
+      setOrders(data as unknown as Order[]);
     }
   };
 
@@ -82,7 +82,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
       .order('created_at', { ascending: false });
 
     if (data) {
-      setRentals(data as Rental[]);
+      setRentals(data as unknown as Rental[]);
     }
   };
 
@@ -278,7 +278,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                       Заказ #{order.id.slice(0, 8)}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {new Date(order.created_at).toLocaleDateString()}
+                      {new Date(order.created_at ?? '').toLocaleDateString()}
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
@@ -342,7 +342,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                       {rental.equipment?.name || 'Оборудование'}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Запрошено: {new Date(rental.created_at).toLocaleDateString()}
+                      Запрошено: {new Date(rental.created_at ?? '').toLocaleDateString()}
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(rental.status)}`}>

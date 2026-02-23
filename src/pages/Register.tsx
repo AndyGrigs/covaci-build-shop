@@ -10,7 +10,7 @@ interface RegisterProps {
 
 export default function Register({
   onSwitchToLogin,
-  onRegisterSuccess,
+  onRegisterSuccess: _onRegisterSuccess,
   onNavigate,
 }: RegisterProps) {
   const { signUp } = useAuth();
