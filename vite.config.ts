@@ -7,4 +7,11 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    host: '0.0.0.0',  // слухати всі інтерфейси, щоб Docker міг пробрасувати порт
+    port: 5173,
+    watch: {
+      usePolling: true,  // потрібно для відстеження змін файлів через volume mount
+    },
+  },
 });

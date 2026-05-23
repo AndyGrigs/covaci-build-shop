@@ -74,7 +74,7 @@ export default function Home({ onNavigate }: HomeProps) {
                     <div className="max-w-4xl mx-auto text-center">
                       <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
                         Качественные строительные материалы и аренда
-                        оборудования
+                        оборудования от Александра Ковачь
                       </h1>
                       <p className="text-xl mb-8 text-blue-100 max-w-3xl mx-auto">
                         Все, что нужно для ваших строительных проектов: от

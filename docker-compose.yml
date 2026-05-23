@@ -1,0 +1,12 @@
+services:
+  app:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app                        # монтуємо код з хоста
+      - /app/node_modules             # ізолюємо node_modules всередині контейнера
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    command: sh -c "npm ci && npm run dev"
