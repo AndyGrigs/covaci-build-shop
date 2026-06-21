@@ -45,9 +45,10 @@ export default function AdminDashboard({
     null,
   );
   const [newCategory, setNewCategory] = useState({
-    name: "",
-    type: "product" as "product" | "equipment",
-  });
+  name: "",
+  type: "product" as "product" | "equipment",
+  image_url: "",
+});
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -75,8 +76,6 @@ export default function AdminDashboard({
     loadData();
   }, [isAdmin, onNavigate]);
 
-  // Note: In a production app, you should also validate admin permissions on the server side
-  // by creating an admin-only API endpoint that validates admin status before returning data
 
   const loadData = async () => {
     setLoading(true);
@@ -123,27 +122,35 @@ export default function AdminDashboard({
   const handleAddCategory = async () => {
     if (!newCategory.name.trim()) return;
 
-    const { data, error } = await supabase
-      .from("categories")
-      .insert([{ name: newCategory.name, type: newCategory.type }])
-      .select()
-      .single();
+  const { data, error } = await supabase
+  .from("categories")
+  .insert([{
+    name: newCategory.name,
+    type: newCategory.type,
+    image_url: newCategory.image_url || null,
+  }])
+  .select()
+  .single();
 
-    if (error) {
-      console.error("Error adding category:", error);
-    } else if (data) {
-      setCategories([...categories, data]);
-      setNewCategory({ name: "", type: "product" });
-    }
+if (error) {
+  console.error("Error adding category:", error);
+} else if (data) {
+  setCategories([...categories, data]);
+  setNewCategory({ name: "", type: "product", image_url: "" });
+}
   };
 
   const handleUpdateCategory = async () => {
     if (!editingCategory) return;
 
     const { error } = await supabase
-      .from("categories")
-      .update({ name: editingCategory.name, type: editingCategory.type })
-      .eq("id", editingCategory.id);
+  .from("categories")
+  .update({
+    name: editingCategory.name,
+    type: editingCategory.type,
+    image_url: editingCategory.image_url || null,
+  })
+  .eq("id", editingCategory.id);
 
     if (error) {
       console.error("Error updating category:", error);
@@ -418,6 +425,7 @@ export default function AdminDashboard({
                 <h2 className="text-xl font-semibold text-gray-900">
                   Управление категориями
                 </h2>
+
                 <div className="flex space-x-4">
                   <select
                     value={newCategory.type}
@@ -432,6 +440,27 @@ export default function AdminDashboard({
                     <option value="product">Товары</option>
                     <option value="equipment">Оборудование</option>
                   </select>
+
+
+                  {/*<div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={newCategory.name}
+                      onChange={(e) =>
+                        setNewCategory({ ...newCategory, name: e.target.value })
+                      }
+                      placeholder="Название категории"
+                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-48"
+                    />
+                    <button
+                      onClick={handleAddCategory}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-1"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Добавить</span>
+                    </button>
+                  </div>*/}
+                  <div className="flex flex-col space-y-3">
                   <div className="flex space-x-2">
                     <input
                       type="text"
@@ -450,6 +479,20 @@ export default function AdminDashboard({
                       <span>Добавить</span>
                     </button>
                   </div>
+                  <div className="w-64">
+                    <ImageUpload
+                      currentImageUrl={newCategory.image_url}
+                      onImageUploaded={(url) =>
+                        setNewCategory({ ...newCategory, image_url: url })
+                      }
+                      onImageRemoved={() =>
+                        setNewCategory({ ...newCategory, image_url: "" })
+                      }
+                    />
+                  </div>
+                </div>
+
+
                 </div>
               </div>
 
@@ -465,6 +508,9 @@ export default function AdminDashboard({
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Тип
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Зображення
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Действия
@@ -509,6 +555,19 @@ export default function AdminDashboard({
                                 <option value="equipment">Оборудование</option>
                               </select>
                             </td>
+                            <td className="px-6 py-4">
+                                <div className="w-48">
+                                  <ImageUpload
+                                    currentImageUrl={editingCategory?.image_url || ""}
+                                    onImageUploaded={(url) =>
+                                      setEditingCategory({ ...editingCategory!, image_url: url })
+                                    }
+                                    onImageRemoved={() =>
+                                      setEditingCategory({ ...editingCategory!, image_url: null })
+                                    }
+                                  />
+                                </div>
+                              </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={handleUpdateCategory}
@@ -531,6 +590,19 @@ export default function AdminDashboard({
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
                               {category.type}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {category.image_url ? (
+                                <img
+                                  src={category.image_url}
+                                  alt={category.name}
+                                  className="w-12 h-12 object-cover rounded-lg"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-gray-400 text-xs">Нет</span>
+                                </div>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
