@@ -56,14 +56,14 @@ export default function AdminDashboard({
     unit: "",
     stock_quantity: 0,
     category_id: "",
-    image_url: "",
+    images: ["", "", "", ""] as string[],
   });
   const [newEquipment, setNewEquipment] = useState({
     name: "",
     description: "",
     daily_rate: 0,
     deposit_amount: 0,
-    image_url: "",
+    images: ["", "", "", ""] as string[],
     category_id: "",
     is_available: true,
   });
@@ -187,7 +187,8 @@ if (error) {
           unit: newProduct.unit,
           stock_quantity: newProduct.stock_quantity,
           category_id: newProduct.category_id,
-          image_url: newProduct.image_url,
+          images: newProduct.images.filter((url) => url !== ""),
+          image_url: newProduct.images[0] || null,
           is_active: true,
         },
       ])
@@ -205,7 +206,7 @@ if (error) {
         unit: "",
         stock_quantity: 0,
         category_id: "",
-        image_url: "",
+        images: ["","","",""] as string[],
       });
     }
   };
@@ -260,7 +261,8 @@ if (error) {
           description: newEquipment.description,
           daily_rate: newEquipment.daily_rate,
           deposit_amount: newEquipment.deposit_amount,
-          image_url: newEquipment.image_url,
+          images: newEquipment.images.filter((url) => url !== ""),
+          image_url: newEquipment.images[0] || null,
           category_id: newEquipment.category_id,
           is_available: newEquipment.is_available,
         },
@@ -277,7 +279,7 @@ if (error) {
         description: "",
         daily_rate: 0,
         deposit_amount: 0,
-        image_url: "",
+        images: ["", "", "", ""] as string[],
         category_id: "",
         is_available: true,
       });
@@ -490,6 +492,7 @@ if (error) {
                       }
                     />
                   </div>
+
                 </div>
 
 
@@ -718,16 +721,23 @@ if (error) {
                     placeholder="URL изображения"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm col-span-2"
                   /> */}
-                  <div className="col-span-2">
-                    <ImageUpload
-                      currentImageUrl={newProduct.image_url}
-                      onImageUploaded={(url) =>
-                        setNewProduct({ ...newProduct, image_url: url })
-                      }
-                      onImageRemoved={() =>
-                        setNewProduct({ ...newProduct, image_url: "" })
-                      }
-                    />
+                  <div className="col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[0, 1, 2, 3].map((index) => (
+                      <ImageUpload
+                        key={index}
+                        currentImageUrl={newProduct.images[index]}
+                        onImageUploaded={(url) => {
+                          const images = [...newProduct.images];
+                          images[index] = url;
+                          setNewProduct({ ...newProduct, images });
+                        }}
+                        onImageRemoved={() => {
+                          const images = [...newProduct.images];
+                          images[index] = "";
+                          setNewProduct({ ...newProduct, images });
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
                 <button
@@ -990,17 +1000,25 @@ if (error) {
                     placeholder="URL изображения"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm col-span-2"
                   /> */}
-                  <div className="col-span-2">
-                    <ImageUpload
-                      currentImageUrl={newEquipment.image_url}
-                      onImageUploaded={(url) =>
-                        setNewEquipment({ ...newEquipment, image_url: url })
-                      }
-                      onImageRemoved={() =>
-                        setNewEquipment({ ...newEquipment, image_url: "" })
-                      }
-                    />
+                 <div className="col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[0, 1, 2, 3].map((index) => (
+                      <ImageUpload
+                        key={index}
+                        currentImageUrl={newEquipment.images[index]}
+                        onImageUploaded={(url) => {
+                          const images = [...newEquipment.images];
+                          images[index] = url;
+                          setNewEquipment({ ...newEquipment, images });
+                        }}
+                        onImageRemoved={() => {
+                          const images = [...newEquipment.images];
+                          images[index] = "";
+                          setNewEquipment({ ...newEquipment, images });
+                        }}
+                      />
+                    ))}
                   </div>
+
                 </div>
                 <button
                   onClick={handleAddEquipment}

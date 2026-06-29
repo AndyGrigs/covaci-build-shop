@@ -200,9 +200,9 @@ export default function EquipmentPage({ onNavigate }: EquipmentProps) {
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="h-48 bg-gradient-to-br from-green-200 to-green-300 flex items-center justify-center">
-                    {item.image_url ? (
+                    {item.images?.[0] ? (
                       <img
-                        src={item.image_url}
+                        src={item.images[0]}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />

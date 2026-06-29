@@ -7,8 +7,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Building2 className="w-8 h-8 text-blue-500" />
-              <span className="text-xl font-bold text-white">КовачМаркет</span>
+              <Building2 className="w-8 h-8 text-brand" />
+              <span className="text-xl font-bold text-white">DenAlex</span>
             </div>
             <p className="text-sm">
               Надежный партнер в сфере качественных строительных материалов и

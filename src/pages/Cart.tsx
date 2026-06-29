@@ -183,9 +183,9 @@ export default function Cart({ onNavigate }: CartProps) {
               className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4"
             >
               <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center flex-shrink-0">
-                {item.products.image_url ? (
+                {item.products.images?.[0] ? (
                   <img
-                    src={item.products.image_url}
+                    src={item.products.images[0]}
                     alt={item.products.name}
                     className="w-full h-full object-cover rounded-lg"
                   />

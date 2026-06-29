@@ -180,9 +180,9 @@ export default function Products({ onNavigate }: ProductsProps) {
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                    {product.image_url ? (
+                    {product.images?.[0] ? (
                       <img
-                        src={product.image_url}
+                        src={product.images[0]}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />

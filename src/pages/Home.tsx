@@ -68,7 +68,7 @@ export default function Home({ onNavigate }: HomeProps) {
   };
 
   const getEquipmentImage = (item: Equipment): string => {
-    if (item.image_url) return item.image_url;
+    if (item.images?.[0]) return item.images[0];
     const nameLower = item.name.toLowerCase();
     const matchedKey = Object.keys(EQUIPMENT_IMAGES).find((key) =>
       nameLower.includes(key)
