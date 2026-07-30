@@ -9,16 +9,23 @@ import Equipment from './pages/Equipment';
 import Cart from './pages/Cart';
 import Cabinet from './pages/Cabinet';
 import AdminDashboard from './pages/AdminDashboard';
+import ProductDetail from './pages/ProductDetail';
 import PageTransition from './components/PageTransition';
 
-type Page = 'home' | 'login' | 'register' | 'products' | 'equipment' | 'cart' | 'cabinet' | 'admin';
+type Page = 'home' | 'login' | 'register' | 'products' | 'product-detail' | 'equipment' | 'cart' | 'cabinet' | 'admin';
 
 function AppContent() {
   const { loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   const handleNavigate = (page: string) => {
-    setCurrentPage(page as Page);
+    if (page.startsWith('product-detail:')) {
+      setSelectedProductId(page.split(':')[1]);
+      setCurrentPage('product-detail');
+    } else {
+      setCurrentPage(page as Page);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -70,6 +77,9 @@ function AppContent() {
       <PageTransition pageKey={currentPage}>
         {currentPage === 'home' && <Home onNavigate={handleNavigate} />}
         {currentPage === 'products' && <Products onNavigate={handleNavigate} />}
+        {currentPage === 'product-detail' && selectedProductId && (
+          <ProductDetail productId={selectedProductId} onNavigate={handleNavigate} />
+        )}
         {currentPage === 'equipment' && <Equipment onNavigate={handleNavigate} />}
         {currentPage === 'cart' && <Cart onNavigate={handleNavigate} />}
         {currentPage === 'cabinet' && <Cabinet onNavigate={handleNavigate} />}

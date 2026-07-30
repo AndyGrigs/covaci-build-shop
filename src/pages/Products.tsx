@@ -177,7 +177,8 @@ export default function Products({ onNavigate }: ProductsProps) {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                  onClick={() => onNavigate(`product-detail:${product.id}`)}
                 >
                   <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                     {product.images?.[0] ? (
@@ -200,7 +201,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                     <div className="flex items-baseline justify-between mb-3">
                       <div>
                         <span className="text-2xl font-bold text-blue-600">
-                          ${product.price.toFixed(2)}
+                          {product.price.toFixed(2)} MDL
                         </span>
                         <span className="text-sm text-gray-500 ml-1">/ {product.unit}</span>
                       </div>
@@ -213,7 +214,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                       </span>
                     </div>
                     <button
-                      onClick={() => addToCart(product)}
+                      onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                       disabled={product.stock_quantity === 0 || addingToCart === product.id}
                       className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
                     >

@@ -221,13 +221,13 @@ export default function EquipmentPage({ onNavigate }: EquipmentProps) {
                       <div className="flex items-baseline justify-between mb-1">
                         <span className="text-sm text-gray-600">Дневная ставка:</span>
                         <span className="text-xl font-bold text-green-600">
-                          ${item.daily_rate.toFixed(2)}
+                          {item.daily_rate.toFixed(2)} MDL
                         </span>
                       </div>
                       <div className="flex items-baseline justify-between">
                         <span className="text-sm text-gray-600">Депозит:</span>
                         <span className="text-sm font-medium text-gray-700">
-                          ${item.deposit_amount.toFixed(2)}
+                          {item.deposit_amount.toFixed(2)} MDL
                         </span>
                       </div>
                     </div>
@@ -262,8 +262,8 @@ export default function EquipmentPage({ onNavigate }: EquipmentProps) {
             <div className="mb-4">
               <h4 className="font-semibold text-lg mb-2">{selectedEquipment.name}</h4>
               <div className="text-sm text-gray-600 space-y-1">
-                <p>Дневная ставка: ${selectedEquipment.daily_rate.toFixed(2)}</p>
-                <p>Требуемый депозит: ${selectedEquipment.deposit_amount.toFixed(2)}</p>
+                <p>Дневная ставка: {selectedEquipment.daily_rate.toFixed(2)} MDL</p>
+                <p>Требуемый депозит: {selectedEquipment.deposit_amount.toFixed(2)} MDL</p>
               </div>
             </div>
 
@@ -302,16 +302,16 @@ export default function EquipmentPage({ onNavigate }: EquipmentProps) {
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-gray-600">Дневная ставка:</span>
-                    <span className="font-semibold">${selectedEquipment.daily_rate.toFixed(2)}</span>
+                    <span className="font-semibold">{selectedEquipment.daily_rate.toFixed(2)} MDL</span>
                   </div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-gray-600">Депозит:</span>
-                    <span className="font-semibold">${selectedEquipment.deposit_amount.toFixed(2)}</span>
+                    <span className="font-semibold">{selectedEquipment.deposit_amount.toFixed(2)} MDL</span>
                   </div>
                   <div className="border-t border-green-200 mt-2 pt-2 flex justify-between">
                     <span className="font-semibold">Итого:</span>
                     <span className="text-xl font-bold text-green-600">
-                      ${(selectedEquipment.daily_rate * calculateDays()).toFixed(2)}
+                      {(selectedEquipment.daily_rate * calculateDays()).toFixed(2)} MDL
                     </span>
                   </div>
                 </div>

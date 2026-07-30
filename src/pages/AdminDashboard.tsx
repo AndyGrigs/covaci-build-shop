@@ -52,17 +52,17 @@ export default function AdminDashboard({
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
-    price: 0,
+    price: "",
     unit: "",
-    stock_quantity: 0,
+    stock_quantity: "",
     category_id: "",
     images: ["", "", "", ""] as string[],
   });
   const [newEquipment, setNewEquipment] = useState({
     name: "",
     description: "",
-    daily_rate: 0,
-    deposit_amount: 0,
+    daily_rate: "",
+    deposit_amount: "",
     images: ["", "", "", ""] as string[],
     category_id: "",
     is_available: true,
@@ -183,9 +183,9 @@ if (error) {
         {
           name: newProduct.name,
           description: newProduct.description,
-          price: newProduct.price,
+          price: parseFloat(newProduct.price) || 0,
           unit: newProduct.unit,
-          stock_quantity: newProduct.stock_quantity,
+          stock_quantity: parseInt(newProduct.stock_quantity) || 0,
           category_id: newProduct.category_id,
           images: newProduct.images.filter((url) => url !== ""),
           image_url: newProduct.images[0] || null,
@@ -202,9 +202,9 @@ if (error) {
       setNewProduct({
         name: "",
         description: "",
-        price: 0,
+        price: "",
         unit: "",
-        stock_quantity: 0,
+        stock_quantity: "",
         category_id: "",
         images: ["","","",""] as string[],
       });
@@ -259,8 +259,8 @@ if (error) {
         {
           name: newEquipment.name,
           description: newEquipment.description,
-          daily_rate: newEquipment.daily_rate,
-          deposit_amount: newEquipment.deposit_amount,
+          daily_rate: parseFloat(newEquipment.daily_rate) || 0,
+          deposit_amount: parseFloat(newEquipment.deposit_amount) || 0,
           images: newEquipment.images.filter((url) => url !== ""),
           image_url: newEquipment.images[0] || null,
           category_id: newEquipment.category_id,
@@ -277,8 +277,8 @@ if (error) {
       setNewEquipment({
         name: "",
         description: "",
-        daily_rate: 0,
-        deposit_amount: 0,
+        daily_rate: "",
+        deposit_amount: "",
         images: ["", "", "", ""] as string[],
         category_id: "",
         is_available: true,
@@ -666,12 +666,9 @@ if (error) {
                     type="number"
                     value={newProduct.price}
                     onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        price: parseFloat(e.target.value) || 0,
-                      })
+                      setNewProduct({ ...newProduct, price: e.target.value })
                     }
-                    placeholder="Цена"
+                    placeholder="Цена (MDL)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
@@ -687,10 +684,7 @@ if (error) {
                     type="number"
                     value={newProduct.stock_quantity}
                     onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
-                        stock_quantity: parseInt(e.target.value) || 0,
-                      })
+                      setNewProduct({ ...newProduct, stock_quantity: e.target.value })
                     }
                     placeholder="Количество на складе"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
@@ -861,7 +855,7 @@ if (error) {
                               {product.name}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              ${product.price.toFixed(2)}
+                              {product.price.toFixed(2)} MDL
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {product.stock_quantity}
@@ -934,24 +928,18 @@ if (error) {
                     type="number"
                     value={newEquipment.daily_rate}
                     onChange={(e) =>
-                      setNewEquipment({
-                        ...newEquipment,
-                        daily_rate: parseFloat(e.target.value) || 0,
-                      })
+                      setNewEquipment({ ...newEquipment, daily_rate: e.target.value })
                     }
-                    placeholder="Дневная ставка"
+                    placeholder="Дневная ставка (MDL)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
                     type="number"
                     value={newEquipment.deposit_amount}
                     onChange={(e) =>
-                      setNewEquipment({
-                        ...newEquipment,
-                        deposit_amount: parseFloat(e.target.value) || 0,
-                      })
+                      setNewEquipment({ ...newEquipment, deposit_amount: e.target.value })
                     }
-                    placeholder="Депозит"
+                    placeholder="Депозит (MDL)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <select
@@ -1142,10 +1130,10 @@ if (error) {
                               {item.name}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              ${item.daily_rate.toFixed(2)}
+                              {item.daily_rate.toFixed(2)} MDL
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              ${item.deposit_amount.toFixed(2)}
+                              {item.deposit_amount.toFixed(2)} MDL
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
@@ -1222,7 +1210,7 @@ if (error) {
                           {new Date(order.created_at ?? '').toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${order.total_amount.toFixed(2)}
+                          {order.total_amount.toFixed(2)} MDL
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span

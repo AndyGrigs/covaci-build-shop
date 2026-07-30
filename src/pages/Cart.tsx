@@ -201,7 +201,7 @@ export default function Cart({ onNavigate }: CartProps) {
                   {item.products.name}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  ${item.products.price.toFixed(2)} / {item.products.unit}
+                  {item.products.price.toFixed(2)} MDL / {item.products.unit}
                 </p>
                 <div className="flex items-center space-x-3">
                   <button
@@ -222,7 +222,7 @@ export default function Cart({ onNavigate }: CartProps) {
 
               <div className="text-right">
                 <p className="text-xl font-bold text-gray-900 mb-2">
-                  ${(item.products.price * item.quantity).toFixed(2)}
+                  {(item.products.price * item.quantity).toFixed(2)} MDL
                 </p>
                 <button
                   onClick={() => removeItem(item.id)}
@@ -242,12 +242,12 @@ export default function Cart({ onNavigate }: CartProps) {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Промежуточный итог:</span>
-                <span className="font-semibold">${calculateTotal().toFixed(2)}</span>
+                <span className="font-semibold">{calculateTotal().toFixed(2)} MDL</span>
               </div>
               <div className="border-t pt-3 flex justify-between">
                 <span className="text-lg font-bold">Итого:</span>
                 <span className="text-2xl font-bold text-blue-600">
-                  ${calculateTotal().toFixed(2)}
+                  {calculateTotal().toFixed(2)} MDL
                 </span>
               </div>
             </div>

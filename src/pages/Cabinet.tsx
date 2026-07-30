@@ -303,7 +303,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                       <span>
                         {item.products?.name || 'Товар'} x {item.quantity}
                       </span>
-                      <span className="font-medium">${item.subtotal.toFixed(2)}</span>
+                      <span className="font-medium">{item.subtotal.toFixed(2)} MDL</span>
                     </div>
                   ))}
                 </div>
@@ -311,7 +311,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
                   <span className="font-semibold">Итого:</span>
                   <span className="text-xl font-bold text-blue-600">
-                    ${order.total_amount.toFixed(2)}
+                    {order.total_amount.toFixed(2)} MDL
                   </span>
                 </div>
               </div>
@@ -364,10 +364,10 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                       <strong>Всего дней:</strong> {rental.total_days}
                     </p>
                     <p className="text-sm text-gray-600">
-                      <strong>Дневная ставка:</strong> ${rental.daily_rate.toFixed(2)}
+                      <strong>Дневная ставка:</strong> {rental.daily_rate.toFixed(2)} MDL
                     </p>
                     <p className="text-sm text-gray-600">
-                      <strong>Депозит:</strong> ${rental.deposit_paid.toFixed(2)}
+                      <strong>Депозит:</strong> {rental.deposit_paid.toFixed(2)} MDL
                     </p>
                   </div>
                 </div>
@@ -381,7 +381,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
                   <span className="font-semibold">Общая сумма:</span>
                   <span className="text-xl font-bold text-green-600">
-                    ${rental.total_amount.toFixed(2)}
+                    {rental.total_amount.toFixed(2)} MDL
                   </span>
                 </div>
               </div>
