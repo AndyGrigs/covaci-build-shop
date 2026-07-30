@@ -103,7 +103,7 @@ export default function Home({ onNavigate }: HomeProps) {
                 <span className="text-gray-900">в одном месте</span>
               </h1>
               <p className="text-gray-500 text-lg mb-8 max-w-md leading-relaxed">
-                Строительные материалы, спецтехника в оренду<br />
+                Строительные материалы, спецтехника в аренду<br />
                 и професиональные услуги
               </p>
               <div className="flex flex-wrap gap-4">
@@ -118,7 +118,7 @@ export default function Home({ onNavigate }: HomeProps) {
                   onClick={() => onNavigate("equipment")}
                   className="inline-flex items-center space-x-2 px-7 py-3.5 border-2 border-gray-300 text-gray-700 font-semibold rounded hover:border-gray-400 transition"
                 >
-                  <span>Оренда техники</span>
+                  <span>Аренда техники</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
@@ -165,7 +165,7 @@ export default function Home({ onNavigate }: HomeProps) {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Доставка по всей</p>
-                  <p className="text-xs text-gray-500">Украине</p>
+                  <p className="text-xs text-gray-500">Молдове</p>
                 </div>
               </div>
 
@@ -224,7 +224,7 @@ export default function Home({ onNavigate }: HomeProps) {
                       {category.name}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">от 25 грн</span>
+                      <span className="text-xs text-gray-400">от 25 MDL</span>
                       <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
                     </div>
                   </div>

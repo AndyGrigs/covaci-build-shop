@@ -263,7 +263,7 @@ if (error) {
           deposit_amount: parseFloat(newEquipment.deposit_amount) || 0,
           images: newEquipment.images.filter((url) => url !== ""),
           image_url: newEquipment.images[0] || null,
-          category_id: newEquipment.category_id,
+          category_id: newEquipment.category_id || null,
           is_available: newEquipment.is_available,
         },
       ])
