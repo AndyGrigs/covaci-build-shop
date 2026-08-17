@@ -1,6 +1,7 @@
 {
   "i18n-ally.localesPaths": [],
   "deno.enablePaths": ["supabase/functions"],
+  "deno.config": "supabase/functions/deno.json",
   "deno.lint": true,
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"

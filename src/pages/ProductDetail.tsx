@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight, Package } from 'lucide-react';
 import type { Database } from '../types/database';
+import { useAppNav } from '../hooks/useAppNav';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
-interface ProductDetailProps {
-  productId: string;
-  onNavigate: (page: string) => void;
-}
-
-export default function ProductDetail({ productId, onNavigate }: ProductDetailProps) {
+export default function ProductDetail() {
+  const { slug: productSlug } = useParams<{ slug: string }>();
+  const onNavigate = useAppNav();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
@@ -22,15 +21,16 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    loadProduct();
-  }, [productId]);
+    if (productSlug) loadProduct();
+  }, [productSlug]);
 
   const loadProduct = async () => {
+    if (!productSlug) return;
     setLoading(true);
     const { data } = await supabase
       .from('products')
       .select('*')
-      .eq('id', productId)
+      .eq('slug', productSlug)
       .single();
 
     if (data) {
@@ -94,7 +94,7 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 flex justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto mb-4" />
           <p className="text-gray-500">Загрузка...</p>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
         <p className="text-gray-500 text-lg mb-4">Товар не найден</p>
         <button
           onClick={() => onNavigate('products')}
-          className="inline-flex items-center space-x-2 text-blue-600 hover:underline"
+          className="inline-flex items-center space-x-2 text-yellow-600 hover:underline"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Вернуться в каталог</span>
@@ -127,7 +127,12 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
         {category && (
           <>
             <span>/</span>
-            <span className="text-gray-400">{category.name}</span>
+            <button
+              onClick={() => onNavigate('products:' + category.slug)}
+              className="hover:text-gray-700 transition"
+            >
+              {category.name}
+            </button>
           </>
         )}
         <span>/</span>
@@ -203,7 +208,7 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
                   onClick={() => setActiveIndex(i)}
                   className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                     i === activeIndex
-                      ? 'border-blue-500 scale-105 shadow-md'
+                      ? 'border-brand scale-105 shadow-md'
                       : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
                   }`}
                 >
@@ -229,7 +234,7 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
 
           {/* Price */}
           <div className="flex items-baseline space-x-2 mb-8">
-            <span className="text-4xl font-black text-blue-600">{product.price.toFixed(2)} MDL</span>
+            <span className="text-4xl font-black text-yellow-600">{product.price.toFixed(2)} MDL</span>
             <span className="text-lg text-gray-500">/ {product.unit}</span>
           </div>
 
@@ -258,7 +263,7 @@ export default function ProductDetail({ productId, onNavigate }: ProductDetailPr
             className={`mt-auto w-full flex items-center justify-center space-x-3 py-4 rounded-xl font-semibold text-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
               added
                 ? 'bg-green-500 text-white'
-                : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg hover:scale-[1.02]'
+                : 'bg-brand hover:bg-brand-dark text-gray-900 hover:shadow-lg hover:scale-[1.02]'
             }`}
           >
             <ShoppingCart className="w-6 h-6" />

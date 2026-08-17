@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { processCheckout } from '../lib/edgeFunctions';
 import { useAuth } from '../contexts/AuthContext';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import type { Database } from '../types/database';
+import { useAppNav } from '../hooks/useAppNav';
 
 type CartItem = Database['public']['Tables']['cart_items']['Row'] & {
   products: Database['public']['Tables']['products']['Row'];
 };
 
-interface CartProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function Cart({ onNavigate }: CartProps) {
+export default function Cart() {
+  const onNavigate = useAppNav();
   const { user, profile } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,52 +81,26 @@ export default function Cart({ onNavigate }: CartProps) {
 
     setProcessing(true);
 
-    const totalAmount = calculateTotal();
-
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        user_id: user.id,
-        total_amount: totalAmount,
-        status: 'pending',
+    try {
+      await processCheckout({
+        items: cartItems.map((item) => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          unit_price: item.products.price,
+        })),
         delivery_address: deliveryAddress,
-        notes: notes || null,
-      })
-      .select()
-      .single();
+        total_amount: calculateTotal(),
+      });
 
-    if (orderError || !order) {
-      alert('Ошибка при создании заказа');
+      await supabase.from('cart_items').delete().eq('user_id', user.id);
+
+      alert('Заказ успешно оформлен!');
+      onNavigate('cabinet');
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Ошибка при оформлении заказа');
+    } finally {
       setProcessing(false);
-      return;
     }
-
-    const orderItems = cartItems.map((item) => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      unit_price: item.products.price,
-      subtotal: item.products.price * item.quantity,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (itemsError) {
-      alert('Ошибка при добавлении товаров к заказу');
-      setProcessing(false);
-      return;
-    }
-
-    await supabase
-      .from('cart_items')
-      .delete()
-      .eq('user_id', user.id);
-
-    setProcessing(false);
-    alert('Заказ успешно оформлен!');
-    onNavigate('cabinet');
   };
 
   if (!user) {

@@ -1,18 +1,12 @@
 import { useState, FormEvent } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { UserPlus, Mail, Lock, User, CheckCircle } from "lucide-react";
+import { useAppNav } from "../hooks/useAppNav";
 
-interface RegisterProps {
-  onSwitchToLogin: () => void;
-  onRegisterSuccess: () => void;
-  onNavigate: (page: string) => void;
-}
-
-export default function Register({
-  onSwitchToLogin,
-  onRegisterSuccess: _onRegisterSuccess,
-  onNavigate,
-}: RegisterProps) {
+export default function Register() {
+  const nav = useAppNav();
+  const onSwitchToLogin = () => nav('login');
+  const onNavigate = nav;
   const { signUp } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -90,7 +84,7 @@ export default function Register({
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Создать аккаунт</h2>
           <p className="text-gray-600 mt-2">
-            Присоединяйтесь к порталу строительных материалов КовачМаркет
+            Присоединяйтесь к порталу строительных материалов DenAlex
           </p>
         </div>
 

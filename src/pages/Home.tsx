@@ -6,16 +6,14 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { slugify } from "../utils/slugify";
+import { useAppNav } from "../hooks/useAppNav";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 
-
-interface HomeProps {
-  onNavigate: (page: string) => void;
-}
 
 // Статичні зображення для категорий (на случай если в БД нет фото)
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -38,34 +36,31 @@ const EQUIPMENT_IMAGES: Record<string, string> = {
 };
 
 
-export default function Home({ onNavigate }: HomeProps) {
+export default function Home() {
+  const onNavigate = useAppNav();
   const [categories, setCategories] = useState<Category[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadCategories();
-    loadEquipment();
-  }, []);
-
-  const loadCategories = async () => {
-    const { data } = await supabase
+    const loadCategories = supabase
       .from("categories")
       .select("*")
       .eq("type", "product")
       .order("name")
-      .limit(6);
-    if (data) setCategories(data);
-  };
+      .limit(6)
+      .then(({ data }) => { if (data) setCategories(data); });
 
-  const loadEquipment = async () => {
-    const { data } = await supabase
+    const loadEquipment = supabase
       .from("equipment")
       .select("*")
       .eq("is_available", true)
       .order("name")
-      .limit(3);
-    if (data) setEquipment(data);
-  };
+      .limit(3)
+      .then(({ data }) => { if (data) setEquipment(data); });
+
+    Promise.all([loadCategories, loadEquipment]).finally(() => setLoading(false));
+  }, []);
 
   const getEquipmentImage = (item: Equipment): string => {
     if (item.images?.[0]) return item.images[0];
@@ -203,12 +198,12 @@ export default function Home({ onNavigate }: HomeProps) {
           </div>
 
           {/* Сетка категорий */}
-          {categories.length > 0 ? (
+          {!loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => onNavigate("products")}
+                  onClick={() => onNavigate("products:" + slugify(category.name))}
                   className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
                 >
                   {/* Фото категории */}
@@ -224,8 +219,7 @@ export default function Home({ onNavigate }: HomeProps) {
                     <p className="text-sm font-semibold text-gray-800 leading-tight mb-1">
                       {category.name}
                     </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">от 25 MDL</span>
+                    <div className="flex items-center justify-end">
                       <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
                     </div>
                   </div>
@@ -279,7 +273,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
             {/* Правая часть — карточки техники */}
             <div className="flex-1 relative">
-              {equipment.length > 0 ? (
+              {!loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {equipment.map((item) => (
                     <div

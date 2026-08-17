@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, Search, Filter, X } from 'lucide-react';
 import type { Database } from '../types/database';
+import { slugify } from '../utils/slugify';
+import { useAppNav } from '../hooks/useAppNav';
 
 type Equipment = Database['public']['Tables']['equipment']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
-interface EquipmentProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function EquipmentPage({ onNavigate }: EquipmentProps) {
+export default function EquipmentPage() {
+  const onNavigate = useAppNav();
+  const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,7 +36,13 @@ export default function EquipmentPage({ onNavigate }: EquipmentProps) {
       .eq('type', 'equipment')
       .order('name');
 
-    if (data) setCategories(data);
+    if (data) {
+      setCategories(data);
+      if (slug) {
+        const match = data.find(c => slugify(c.name) === slug);
+        if (match) setSelectedCategory(match.id);
+      }
+    }
   };
 
   const loadEquipment = async () => {

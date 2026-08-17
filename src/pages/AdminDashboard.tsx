@@ -16,19 +16,17 @@ import {
 } from "lucide-react";
 import type { Database } from "../types/database";
 import ImageUpload from "../components/ImageUpload";
+import { useAppNav } from "../hooks/useAppNav";
 
 // Types for our data
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Product = Database["public"]["Tables"]["products"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 type Order = Database["public"]["Tables"]["orders"]["Row"];
-type UserRow = { id: string; email: string; created_at: string };
+type UserRow = { id: string; full_name: string | null; phone: string | null; is_admin: boolean; created_at: string };
 
-export default function AdminDashboard({
-  onNavigate,
-}: {
-  onNavigate: (page: string) => void;
-}) {
+export default function AdminDashboard() {
+  const onNavigate = useAppNav();
   const { isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<
     "categories" | "products" | "equipment" | "orders" | "users"
@@ -108,15 +106,29 @@ export default function AdminDashboard({
       .order("created_at", { ascending: false });
     if (ordersData) setOrders(ordersData);
 
-    // Load users (just basic info for admin)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: usersData } = await (supabase as any)
-      .from("users")
-      .select("id, email, created_at")
+    const { data: usersData } = await supabase
+      .from("profiles")
+      .select("id, full_name, phone, is_admin, created_at")
       .order("created_at", { ascending: false });
     if (usersData) setUsers(usersData as UserRow[]);
 
     setLoading(false);
+  };
+
+  const ORDER_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'] as const;
+  type OrderStatus = typeof ORDER_STATUSES[number];
+
+  const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+    pending:   'Ожидает',
+    confirmed: 'Подтверждён',
+    shipped:   'Отправлен',
+    delivered: 'Доставлен',
+    cancelled: 'Отменён',
+  };
+
+  const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
+    await supabase.from('orders').update({ status }).eq('id', orderId);
+    setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
   };
 
   const handleAddCategory = async () => {
@@ -332,7 +344,7 @@ if (error) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto mb-4"></div>
           <p className="text-gray-600">Загрузка панели администратора...</p>
         </div>
       </div>
@@ -364,7 +376,7 @@ if (error) {
               onClick={() => setActiveTab("categories")}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center space-x-2 ${
                 activeTab === "categories"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-brand text-yellow-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -375,7 +387,7 @@ if (error) {
               onClick={() => setActiveTab("products")}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center space-x-2 ${
                 activeTab === "products"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-brand text-yellow-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -386,7 +398,7 @@ if (error) {
               onClick={() => setActiveTab("equipment")}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center space-x-2 ${
                 activeTab === "equipment"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-brand text-yellow-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -397,7 +409,7 @@ if (error) {
               onClick={() => setActiveTab("orders")}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center space-x-2 ${
                 activeTab === "orders"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-brand text-yellow-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -408,7 +420,7 @@ if (error) {
               onClick={() => setActiveTab("users")}
               className={`py-4 px-6 text-center border-b-2 font-medium text-sm flex items-center space-x-2 ${
                 activeTab === "users"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-brand text-yellow-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
@@ -456,7 +468,7 @@ if (error) {
                     />
                     <button
                       onClick={handleAddCategory}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-1"
+                      className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Добавить</span>
@@ -475,7 +487,7 @@ if (error) {
                     />
                     <button
                       onClick={handleAddCategory}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-1"
+                      className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Добавить</span>
@@ -610,7 +622,7 @@ if (error) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={() => setEditingCategory(category)}
-                                className="text-blue-600 hover:text-blue-900 mr-2"
+                                className="text-yellow-600 hover:text-yellow-800 mr-2"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
@@ -736,7 +748,7 @@ if (error) {
                 </div>
                 <button
                   onClick={handleAddProduct}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-1"
+                  className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Добавить товар</span>
@@ -874,7 +886,7 @@ if (error) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={() => setEditingProduct(product)}
-                                className="text-blue-600 hover:text-blue-900 mr-2"
+                                className="text-yellow-600 hover:text-yellow-800 mr-2"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
@@ -1010,7 +1022,7 @@ if (error) {
                 </div>
                 <button
                   onClick={handleAddEquipment}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-1"
+                  className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Добавить оборудование</span>
@@ -1149,7 +1161,7 @@ if (error) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={() => setEditingEquipment(item)}
-                                className="text-blue-600 hover:text-blue-900 mr-2"
+                                className="text-yellow-600 hover:text-yellow-800 mr-2"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
@@ -1213,20 +1225,15 @@ if (error) {
                           {order.total_amount.toFixed(2)} MDL
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              order.status === "delivered"
-                                ? "bg-green-100 text-green-800"
-                                : order.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : order.status === "cancelled"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-blue-100 text-blue-800"
-                            }`}
+                          <select
+                            value={order.status}
+                            onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
+                            className="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-brand focus:border-transparent"
                           >
-                            {order.status.charAt(0).toUpperCase() +
-                              order.status.slice(1)}
-                          </span>
+                            {ORDER_STATUSES.map((s) => (
+                              <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
+                            ))}
+                          </select>
                         </td>
                       </tr>
                     ))}
@@ -1250,10 +1257,16 @@ if (error) {
                         ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
+                        Ім'я
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Дата регистрации
+                        Телефон
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Адмін
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Дата реєстрації
                       </th>
                     </tr>
                   </thead>
@@ -1264,7 +1277,15 @@ if (error) {
                           {user.id.slice(0, 8)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {user.email}
+                          {user.full_name ?? '—'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {user.phone ?? '—'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {user.is_admin
+                            ? <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Адмін</span>
+                            : <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Користувач</span>}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(user.created_at).toLocaleDateString()}

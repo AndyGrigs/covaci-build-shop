@@ -51,8 +51,9 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
-          image_url: string | null 
+          image_url: string | null
           name: string
+          slug: string
           type: string
         }
         Insert: {
@@ -61,6 +62,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          slug?: string | null
           type: string
         }
         Update: {
@@ -69,6 +71,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          slug?: string | null
           type?: string
         }
         Relationships: []
@@ -85,6 +88,7 @@ export type Database = {
           images: string[]
           is_available: boolean | null
           name: string
+          slug: string
           updated_at: string | null
         }
         Insert: {
@@ -98,6 +102,7 @@ export type Database = {
           images?: string[]
           is_available?: boolean | null
           name: string
+          slug?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -111,6 +116,7 @@ export type Database = {
           images?: string[]
           is_available?: boolean | null
           name?: string
+          slug?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -209,6 +215,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           price: number
+          slug: string
           stock_quantity: number
           unit: string
           updated_at: string | null
@@ -223,6 +230,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           price: number
+          slug?: string | null
           stock_quantity?: number
           unit?: string
           updated_at?: string | null
@@ -237,6 +245,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+          slug?: string | null
           stock_quantity?: number
           unit?: string
           updated_at?: string | null

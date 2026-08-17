@@ -1,14 +1,13 @@
 import { useState, FormEvent } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, Mail, Lock } from 'lucide-react';
+import { useAppNav } from '../hooks/useAppNav';
 
-interface LoginProps {
-  onSwitchToRegister: () => void;
-  onLoginSuccess: () => void;
-  onNavigate: (page: string) => void;
-}
-
-export default function Login({ onSwitchToRegister, onLoginSuccess, onNavigate }: LoginProps) {
+export default function Login() {
+  const nav = useAppNav();
+  const onSwitchToRegister = () => nav('register');
+  const onLoginSuccess = () => nav('home');
+  const onNavigate = nav;
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

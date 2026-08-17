@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, Search, Filter } from 'lucide-react';
 import type { Database } from '../types/database';
+import { slugify } from '../utils/slugify';
+import { useAppNav } from '../hooks/useAppNav';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
-interface ProductsProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function Products({ onNavigate }: ProductsProps) {
+export default function Products() {
+  const onNavigate = useAppNav();
+  const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -22,7 +23,6 @@ export default function Products({ onNavigate }: ProductsProps) {
 
   useEffect(() => {
     loadCategories();
-    loadProducts();
   }, []);
 
   const loadCategories = async () => {
@@ -32,7 +32,13 @@ export default function Products({ onNavigate }: ProductsProps) {
       .eq('type', 'product')
       .order('name');
 
-    if (data) setCategories(data);
+    if (data) {
+      setCategories(data);
+      if (slug) {
+        const match = data.find(c => slugify(c.name) === slug);
+        if (match) setSelectedCategory(match.id);
+      }
+    }
   };
 
   const loadProducts = async () => {
@@ -123,7 +129,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                   placeholder="Поиск товаров..."
                 />
               </div>
@@ -138,7 +144,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                   onClick={() => setSelectedCategory('')}
                   className={`w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === ''
-                      ? 'bg-blue-50 text-blue-600 font-medium'
+                      ? 'bg-yellow-50 text-yellow-600 font-medium'
                       : 'hover:bg-gray-100'
                   }`}
                 >
@@ -150,7 +156,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                     onClick={() => setSelectedCategory(category.id)}
                     className={`w-full text-left px-3 py-2 rounded-lg transition ${
                       selectedCategory === category.id
-                        ? 'bg-blue-50 text-blue-600 font-medium'
+                        ? 'bg-yellow-50 text-yellow-600 font-medium'
                         : 'hover:bg-gray-100'
                     }`}
                   >
@@ -165,7 +171,7 @@ export default function Products({ onNavigate }: ProductsProps) {
         <div className="lg:col-span-3">
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
               <p className="text-gray-600 mt-4">Загрузка товаров...</p>
             </div>
           ) : products.length === 0 ? (
@@ -178,7 +184,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                 <div
                   key={product.id}
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  onClick={() => onNavigate(`product-detail:${product.id}`)}
+                  onClick={() => onNavigate(`product-detail:${product.slug}`)}
                 >
                   <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                     {product.images?.[0] ? (
@@ -200,7 +206,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                     </p>
                     <div className="flex items-baseline justify-between mb-3">
                       <div>
-                        <span className="text-2xl font-bold text-blue-600">
+                        <span className="text-2xl font-bold text-yellow-600">
                           {product.price.toFixed(2)} MDL
                         </span>
                         <span className="text-sm text-gray-500 ml-1">/ {product.unit}</span>
@@ -216,7 +222,7 @@ export default function Products({ onNavigate }: ProductsProps) {
                     <button
                       onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                       disabled={product.stock_quantity === 0 || addingToCart === product.id}
-                      className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
+                      className="w-full bg-brand text-gray-900 py-2 rounded-lg font-medium hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
                     >
                       <ShoppingCart className="w-5 h-5" />
                       <span>

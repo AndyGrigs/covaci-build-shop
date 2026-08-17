@@ -94,7 +94,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
-          <p>&copy; 2024 КовачМаркет. Все права защищены.</p>
+          <p>&copy; 2024 DenAlex. Все права защищены.</p>
         </div>
       </div>
     </footer>

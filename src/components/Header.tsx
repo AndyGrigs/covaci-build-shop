@@ -14,62 +14,78 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
-interface HeaderProps {
-  onNavigate: (page: string) => void;
-  currentPage: string;
-}
+const navLinks = [
+  { label: "Главная", path: "/" },
+  { label: "Каталог", path: "/catalog", icon: <ChevronDown className="w-4 h-4" /> },
+  { label: "Аренда техники", path: "/arenda-tehniki" },
+  { label: "Услуги", path: "" },
+  { label: "О нас", path: "" },
+  { label: "Контакты", path: "/kontakt" },
+];
 
-export default function Header({ onNavigate, currentPage }: HeaderProps) {
+export default function Header() {
   const { user, profile, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      loadCartCount();
-    } else {
+    if (!user) {
       setCartCount(0);
+      return;
     }
+
+    const loadCartCount = async () => {
+      const { data } = await supabase
+        .from("cart_items")
+        .select("quantity")
+        .eq("user_id", user.id);
+      if (data) {
+        setCartCount(data.reduce((sum, item) => sum + item.quantity, 0));
+      }
+    };
+
+    loadCartCount();
+
+    const channel = supabase
+      .channel("header-cart-count")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
+        loadCartCount
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const loadCartCount = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("cart_items")
-      .select("quantity")
-      .eq("user_id", user.id);
-    if (data) {
-      setCartCount(data.reduce((sum, item) => sum + item.quantity, 0));
-    }
-  };
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("home");
+    navigate("/");
   };
 
-  const navigate = (page: string) => {
-    setMenuOpen(false);
-    onNavigate(page);
+  const go = (path: string) => {
+    if (path) navigate(path);
   };
 
-  const navLinks = [
-    { label: "Главная", page: "home" },
-    { label: "Каталог", page: "products", icon: <ChevronDown className="w-4 h-4" /> },
-    { label: "Аренда техники", page: "equipment" },
-    { label: "Услуги", page: "" },
-    { label: "О нас", page: "" },
-    { label: "Контакты", page: "" },
-  ];
+  const isActive = (path: string) => {
+    if (!path) return false;
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <>
@@ -90,7 +106,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             <div className="flex items-center space-x-4">
               <span className="flex items-center space-x-1">
                 <Phone className="w-3.5 h-3.5 text-brand" />
-                <span>+37 37 8719072</span>
+                <span>+373 78719072</span>
               </span>
               <span className="text-gray-500">|</span>
               <span className="text-gray-300 cursor-pointer hover:text-white transition">MD</span>
@@ -105,7 +121,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
               {/* Logo */}
               <button
-                onClick={() => navigate("home")}
+                onClick={() => navigate("/")}
                 className="flex items-center space-x-2 hover:opacity-80 transition"
               >
                 <Building2 className="w-8 h-8 text-brand" />
@@ -114,19 +130,19 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
               {/* Desktop nav */}
               <nav className="hidden md:flex items-center space-x-1">
-                {navLinks.map(({ label, page, icon }) => (
+                {navLinks.map(({ label, path, icon }) => (
                   <button
                     key={label}
-                    onClick={() => page && navigate(page)}
+                    onClick={() => go(path)}
                     className={`px-4 py-2 font-medium transition relative flex items-center space-x-1 ${
-                      page && currentPage === page
+                      isActive(path)
                         ? "text-brand-dark"
                         : "text-gray-700 hover:text-brand-dark"
                     }`}
                   >
                     <span>{label}</span>
                     {icon}
-                    {page && currentPage === page && (
+                    {isActive(path) && (
                       <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand" />
                     )}
                   </button>
@@ -140,9 +156,9 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   <Heart className="w-5 h-5" />
                 </button>
 
-                {/* Cart — always visible */}
+                {/* Cart */}
                 <button
-                  onClick={() => navigate(user ? "cart" : "login")}
+                  onClick={() => navigate(user ? "/korzina" : "/vkhod")}
                   className="relative p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
                 >
                   <ShoppingCart className="w-5 h-5" />
@@ -158,7 +174,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   <div className="hidden md:flex items-center space-x-1">
                     {isAdmin && (
                       <button
-                        onClick={() => navigate("admin")}
+                        onClick={() => navigate("/admin")}
                         className="p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
                         title="Админ панель"
                       >
@@ -166,7 +182,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                       </button>
                     )}
                     <button
-                      onClick={() => navigate("cabinet")}
+                      onClick={() => navigate("/kabinet")}
                       className="p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
                       title={profile?.full_name || "Кабинет"}
                     >
@@ -182,14 +198,14 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => navigate("login")}
+                    onClick={() => navigate("/vkhod")}
                     className="hidden md:block px-5 py-2 bg-brand text-gray-900 rounded font-semibold hover:bg-brand-dark transition hover:scale-105 active:scale-95"
                   >
                     Войти
                   </button>
                 )}
 
-                {/* Burger button — mobile/tablet only */}
+                {/* Burger button */}
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
                   className="md:hidden p-2 text-gray-600 hover:text-brand-dark transition active:scale-95"
@@ -209,12 +225,12 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
           }`}
         >
           <nav className="px-4 pt-2 pb-4 space-y-1">
-            {navLinks.map(({ label, page }) => (
+            {navLinks.map(({ label, path }) => (
               <button
                 key={label}
-                onClick={() => page && navigate(page)}
+                onClick={() => go(path)}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition ${
-                  page && currentPage === page
+                  isActive(path)
                     ? "bg-brand/10 text-brand-dark"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
@@ -231,7 +247,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                   <p className="px-4 py-2 text-sm text-gray-500 font-medium">{profile.full_name}</p>
                 )}
                 <button
-                  onClick={() => navigate("cabinet")}
+                  onClick={() => navigate("/kabinet")}
                   className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                 >
                   <User className="w-5 h-5" />
@@ -239,7 +255,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
                 </button>
                 {isAdmin && (
                   <button
-                    onClick={() => navigate("admin")}
+                    onClick={() => navigate("/admin")}
                     className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                   >
                     <Settings className="w-5 h-5" />
@@ -256,7 +272,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               </div>
             ) : (
               <button
-                onClick={() => navigate("login")}
+                onClick={() => navigate("/vkhod")}
                 className="w-full py-3 bg-brand text-gray-900 rounded-lg font-semibold hover:bg-brand-dark transition active:scale-95"
               >
                 Войти

@@ -7,9 +7,7 @@ import { supabase } from './supabase'
 export interface CheckoutItem {
   product_id: string
   quantity: number
-  price_at_purchase: number
-  start_date?: string
-  end_date?: string
+  unit_price: number
 }
 
 export interface CheckoutRequest {
@@ -27,8 +25,6 @@ export interface CheckoutResponse {
 export interface InventoryCheckRequest {
   product_id: string
   quantity: number
-  start_date?: string
-  end_date?: string
 }
 
 export interface InventoryCheckResponse {
@@ -153,36 +149,3 @@ export function validateRentalDates(
   return { valid: true }
 }
 
-/**
- * Приклад використання:
- *
- * // Перевірка наявності перед додаванням в кошик
- * const availability = await checkInventory({
- *   product_id: 'uuid-here',
- *   quantity: 2,
- *   start_date: '2025-12-10',
- *   end_date: '2025-12-15'
- * })
- *
- * if (availability.available) {
- *   console.log(`Available: ${availability.available_quantity} units`)
- *   console.log(`Total price: $${availability.total_price}`)
- * }
- *
- * // Оформлення замовлення
- * const order = await processCheckout({
- *   items: [
- *     {
- *       product_id: 'uuid-here',
- *       quantity: 2,
- *       price_at_purchase: 50.00,
- *       start_date: '2025-12-10',
- *       end_date: '2025-12-15'
- *     }
- *   ],
- *   delivery_address: 'вул. Хрещатик, 1, Київ',
- *   total_amount: 500.00
- * })
- *
- * console.log(`Order created: ${order.order_id}`)
- */

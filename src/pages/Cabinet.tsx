@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Package, Calendar, Edit, Save, Settings } from 'lucide-react';
 import type { Database } from '../types/database';
+import { useAppNav } from '../hooks/useAppNav';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   order_items: (Database['public']['Tables']['order_items']['Row'] & {
@@ -14,11 +15,8 @@ type Rental = Database['public']['Tables']['rentals']['Row'] & {
   equipment: Database['public']['Tables']['equipment']['Row'] | null;
 };
 
-interface CabinetProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function Cabinet({ onNavigate }: CabinetProps) {
+export default function Cabinet() {
+  const onNavigate = useAppNav();
   const { user, profile, isAdmin, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'rentals'>('profile');
   const [orders, setOrders] = useState<Order[]>([]);
@@ -96,18 +94,33 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      pending: 'bg-yellow-100 text-yellow-700',
-      confirmed: 'bg-blue-100 text-blue-700',
-      active: 'bg-green-100 text-green-700',
-      shipped: 'bg-cyan-100 text-cyan-700',
-      delivered: 'bg-green-100 text-green-700',
-      completed: 'bg-gray-100 text-gray-700',
-      cancelled: 'bg-red-100 text-red-700',
-    };
-    return colors[status] || 'bg-gray-100 text-gray-700';
+  const ORDER_STATUS_LABELS: Record<string, string> = {
+    pending:   'Ожидает',
+    confirmed: 'Подтверждён',
+    shipped:   'Отправлен',
+    delivered: 'Доставлен',
+    cancelled: 'Отменён',
   };
+
+  const RENTAL_STATUS_LABELS: Record<string, string> = {
+    pending:   'Ожидает',
+    active:    'Активна',
+    completed: 'Завершена',
+    cancelled: 'Отменена',
+  };
+
+  const STATUS_COLORS: Record<string, string> = {
+    pending:   'bg-yellow-100 text-yellow-700',
+    confirmed: 'bg-blue-100 text-blue-700',
+    shipped:   'bg-cyan-100 text-cyan-700',
+    delivered: 'bg-green-100 text-green-700',
+    active:    'bg-green-100 text-green-700',
+    completed: 'bg-gray-100 text-gray-700',
+    cancelled: 'bg-red-100 text-red-700',
+  };
+
+  const getStatusColor = (status: string) =>
+    STATUS_COLORS[status] ?? 'bg-gray-100 text-gray-700';
 
   if (!user) {
     onNavigate('login');
@@ -282,7 +295,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                    {order.status}
+                    {ORDER_STATUS_LABELS[order.status] ?? order.status}
                   </span>
                 </div>
 
@@ -346,7 +359,7 @@ export default function Cabinet({ onNavigate }: CabinetProps) {
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(rental.status)}`}>
-                    {rental.status}
+                    {RENTAL_STATUS_LABELS[rental.status] ?? rental.status}
                   </span>
                 </div>
 
