@@ -1,13 +1,8 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:ssg",
   "outputDirectory": "dist",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "cleanUrls": true
 }
