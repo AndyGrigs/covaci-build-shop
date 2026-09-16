@@ -111,7 +111,7 @@ export default function Cabinet() {
 
   const STATUS_COLORS: Record<string, string> = {
     pending:   'bg-yellow-100 text-yellow-700',
-    confirmed: 'bg-blue-100 text-blue-700',
+    confirmed: 'bg-purple-100 text-purple-700',
     shipped:   'bg-cyan-100 text-cyan-700',
     delivered: 'bg-green-100 text-green-700',
     active:    'bg-green-100 text-green-700',
@@ -137,7 +137,7 @@ export default function Cabinet() {
             onClick={() => setActiveTab('profile')}
             className={`pb-4 px-2 font-medium transition ${
               activeTab === 'profile'
-                ? 'border-b-2 border-blue-600 text-blue-600'
+                ? 'border-b-2 border-brand text-yellow-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -148,7 +148,7 @@ export default function Cabinet() {
             onClick={() => setActiveTab('orders')}
             className={`pb-4 px-2 font-medium transition ${
               activeTab === 'orders'
-                ? 'border-b-2 border-blue-600 text-blue-600'
+                ? 'border-b-2 border-brand text-yellow-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -159,7 +159,7 @@ export default function Cabinet() {
             onClick={() => setActiveTab('rentals')}
             className={`pb-4 px-2 font-medium transition ${
               activeTab === 'rentals'
-                ? 'border-b-2 border-blue-600 text-blue-600'
+                ? 'border-b-2 border-brand text-yellow-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -185,7 +185,7 @@ export default function Cabinet() {
             {!editing ? (
               <button
                 onClick={() => setEditing(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="flex items-center space-x-2 px-4 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 <Edit className="w-4 h-4" />
                 <span>Редактировать</span>
@@ -211,7 +211,7 @@ export default function Cabinet() {
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                 disabled={!editing}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent disabled:bg-gray-50"
               />
             </div>
 
@@ -236,7 +236,7 @@ export default function Cabinet() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 disabled={!editing}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent disabled:bg-gray-50"
               />
             </div>
 
@@ -249,7 +249,7 @@ export default function Cabinet() {
                 value={formData.company_name}
                 onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                 disabled={!editing}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent disabled:bg-gray-50"
               />
             </div>
 
@@ -261,7 +261,7 @@ export default function Cabinet() {
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 disabled={!editing}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent disabled:bg-gray-50"
                 rows={3}
               />
             </div>
@@ -277,7 +277,7 @@ export default function Cabinet() {
               <p className="text-gray-600">Заказов пока нет</p>
               <button
                 onClick={() => onNavigate('products')}
-                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="mt-4 px-6 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 Начать покупки
               </button>
@@ -323,7 +323,7 @@ export default function Cabinet() {
 
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
                   <span className="font-semibold">Итого:</span>
-                  <span className="text-xl font-bold text-blue-600">
+                  <span className="text-xl font-bold text-yellow-600">
                     {order.total_amount.toFixed(2)} MDL
                   </span>
                 </div>

@@ -153,11 +153,11 @@ export default function ImageUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {uploading ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
               <span>Загрузка...</span>
             </>
           ) : (

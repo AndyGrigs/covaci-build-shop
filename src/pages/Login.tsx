@@ -38,8 +38,8 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <LogIn className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-brand rounded-full mb-4">
+            <LogIn className="w-8 h-8 text-gray-900" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">С возвращением</h2>
           <p className="text-gray-600 mt-2">Войдите в свой аккаунт</p>
@@ -62,7 +62,7 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition"
                 placeholder="ваш@email.com"
                 required
               />
@@ -79,7 +79,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition"
                 placeholder="Введите ваш пароль"
                 required
               />
@@ -89,7 +89,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-brand text-gray-900 py-3 rounded-lg font-medium hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Выполняется вход...' : 'Войти'}
           </button>
@@ -100,7 +100,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-blue-600 font-medium hover:text-blue-700 transition"
+                className="text-brand-dark font-medium hover:text-brand transition"
               >
                 Зарегистрироваться
               </button>

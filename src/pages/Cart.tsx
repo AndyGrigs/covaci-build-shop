@@ -111,7 +111,7 @@ export default function Cart() {
         <p className="text-gray-600 mb-6">Вам нужно войти в систему, чтобы увидеть вашу корзину</p>
         <button
           onClick={() => onNavigate('login')}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+          className="px-6 py-3 bg-brand text-gray-900 rounded-lg font-medium hover:bg-brand-dark transition"
         >
           Войти
         </button>
@@ -122,7 +122,7 @@ export default function Cart() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
         <p className="text-gray-600 mt-4">Загрузка корзины...</p>
       </div>
     );
@@ -136,7 +136,7 @@ export default function Cart() {
         <p className="text-gray-600 mb-6">Добавьте несколько товаров, чтобы начать</p>
         <button
           onClick={() => onNavigate('products')}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+          className="px-6 py-3 bg-brand text-gray-900 rounded-lg font-medium hover:bg-brand-dark transition"
         >
           Просмотр товаров
         </button>
@@ -219,7 +219,7 @@ export default function Cart() {
               </div>
               <div className="border-t pt-3 flex justify-between">
                 <span className="text-lg font-bold">Итого:</span>
-                <span className="text-2xl font-bold text-blue-600">
+                <span className="text-2xl font-bold text-yellow-600">
                   {calculateTotal().toFixed(2)} MDL
                 </span>
               </div>
@@ -233,7 +233,7 @@ export default function Cart() {
                 <textarea
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                   rows={3}
                   placeholder="Введите адрес доставки..."
                   required
@@ -247,7 +247,7 @@ export default function Cart() {
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                   rows={2}
                   placeholder="Любые специальные инструкции..."
                 />
@@ -257,7 +257,7 @@ export default function Cart() {
             <button
               onClick={handleCheckout}
               disabled={processing}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-brand text-gray-900 py-3 rounded-lg font-semibold hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {processing ? 'Обработка...' : 'Перейти к оформлению заказа'}
             </button>
