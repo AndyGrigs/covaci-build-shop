@@ -526,38 +526,38 @@ if (error) {
                       <span>Добавить</span>
                     </button>
                   </div>*/}
-                  <div className="flex flex-col space-y-3">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={newCategory.name}
-                      onChange={(e) =>
-                        setNewCategory({ ...newCategory, name: e.target.value })
-                      }
-                      placeholder="Название категории"
-                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-48"
-                    />
+                  <div className="flex items-end gap-3">
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        value={newCategory.name}
+                        onChange={(e) =>
+                          setNewCategory({ ...newCategory, name: e.target.value })
+                        }
+                        placeholder="Название категории"
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-72"
+                      />
+                    </div>
+                    <div className="w-36 shrink-0">
+                      <ImageUpload
+                        compact
+                        currentImageUrl={newCategory.image_url}
+                        onImageUploaded={(url) =>
+                          setNewCategory({ ...newCategory, image_url: url })
+                        }
+                        onImageRemoved={() =>
+                          setNewCategory({ ...newCategory, image_url: "" })
+                        }
+                      />
+                    </div>
                     <button
                       onClick={handleAddCategory}
-                      className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1"
+                      className="bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center space-x-1 shrink-0"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Добавить</span>
                     </button>
                   </div>
-                  <div className="w-64">
-                    <ImageUpload
-                      currentImageUrl={newCategory.image_url}
-                      onImageUploaded={(url) =>
-                        setNewCategory({ ...newCategory, image_url: url })
-                      }
-                      onImageRemoved={() =>
-                        setNewCategory({ ...newCategory, image_url: "" })
-                      }
-                    />
-                  </div>
-
-                </div>
 
 
                 </div>

@@ -33,9 +33,11 @@ async function verifyHookSignature(req: Request, body: string): Promise<boolean>
   const ts = parseInt(msgTimestamp, 10)
   if (Math.abs(Math.floor(Date.now() / 1000) - ts) > 300) return false
 
-  // Секрет зберігається як "whsec_<base64>" — стрипимо префікс і декодуємо
-  const secretBase64 = HOOK_SECRET.startsWith('whsec_') ? HOOK_SECRET.slice(6) : HOOK_SECRET
-  const secretBytes = Uint8Array.from(atob(secretBase64), (c) => c.charCodeAt(0))
+  // Секрет має формат "v1,whsec_<base64>" — стрипимо обидва префікси
+  let raw = HOOK_SECRET
+  if (raw.startsWith('v1,')) raw = raw.slice(3)
+  if (raw.startsWith('whsec_')) raw = raw.slice(6)
+  const secretBytes = Uint8Array.from(atob(raw), (c) => c.charCodeAt(0))
 
   const key = await crypto.subtle.importKey(
     'raw',

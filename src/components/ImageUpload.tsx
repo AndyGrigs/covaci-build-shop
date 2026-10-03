@@ -6,12 +6,14 @@ interface ImageUploadProps {
   currentImageUrl?: string;
   onImageUploaded: (url: string) => void;
   onImageRemoved?: () => void;
+  compact?: boolean;
 }
 
-export default function ImageUpload({ 
-  currentImageUrl, 
-  onImageUploaded, 
-  onImageRemoved 
+export default function ImageUpload({
+  currentImageUrl,
+  onImageUploaded,
+  onImageRemoved,
+  compact = false,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImageUrl || null);
@@ -114,32 +116,29 @@ export default function ImageUpload({
     }
   };
 
+  const zoneH = compact ? 'h-20' : 'h-48';
+  const iconSize = compact ? 'w-8 h-8' : 'w-16 h-16';
+
   return (
-    <div className="space-y-4">
-      {/* Preview зображення */}
+    <div className={compact ? 'space-y-2' : 'space-y-4'}>
       {preview ? (
-        <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
+        <div className={`relative w-full ${zoneH} bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300`}>
+          <img src={preview} alt="Preview" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={handleRemoveImage}
-            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition"
+            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition"
             title="Удалить изображение"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </button>
         </div>
       ) : (
-        <div className="w-full h-48 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-          <ImageIcon className="w-16 h-16 text-gray-400" />
+        <div className={`w-full ${zoneH} bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center`}>
+          <ImageIcon className={`${iconSize} text-gray-400`} />
         </div>
       )}
 
-      {/* Кнопка завантаження */}
       <div>
         <input
           ref={fileInputRef}
@@ -153,7 +152,7 @@ export default function ImageUpload({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="w-full bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-brand text-gray-900 px-4 py-2 rounded-lg hover:bg-brand-dark transition flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
         >
           {uploading ? (
             <>
@@ -163,16 +162,17 @@ export default function ImageUpload({
           ) : (
             <>
               <Upload className="w-4 h-4" />
-              <span>{preview ? 'Изменить изображение' : 'Загрузить изображение'}</span>
+              <span>{preview ? 'Изменить' : 'Загрузить фото'}</span>
             </>
           )}
         </button>
       </div>
 
-      {/* Підказка */}
-      <p className="text-xs text-gray-500 text-center">
-        Допустимые форматы: JPG, PNG, GIF, WEBP. Максимальный размер: 5MB
-      </p>
+      {!compact && (
+        <p className="text-xs text-gray-500 text-center">
+          Допустимые форматы: JPG, PNG, GIF, WEBP. Максимальный размер: 5MB
+        </p>
+      )}
     </div>
   );
 }
