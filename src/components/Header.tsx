@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 const navLinks = [
@@ -77,10 +77,6 @@ export default function Header() {
     navigate("/");
   };
 
-  const go = (path: string) => {
-    if (path) navigate(path);
-  };
-
   const isActive = (path: string) => {
     if (!path) return false;
     if (path === "/") return location.pathname === "/";
@@ -120,33 +116,41 @@ export default function Header() {
             <div className="flex items-center justify-between h-16">
 
               {/* Logo */}
-              <button
-                onClick={() => navigate("/")}
-                className="flex items-center space-x-2 hover:opacity-80 transition"
-              >
+              <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition">
                 <Building2 className="w-8 h-8 text-brand" />
                 <span className="text-xl font-bold text-gray-900">DenAlex</span>
-              </button>
+              </Link>
 
               {/* Desktop nav */}
               <nav className="hidden md:flex items-center space-x-1">
-                {navLinks.map(({ label, path, icon }) => (
-                  <button
-                    key={label}
-                    onClick={() => go(path)}
-                    className={`px-4 py-2 font-medium transition relative flex items-center space-x-1 ${
-                      isActive(path)
-                        ? "text-brand-dark"
-                        : "text-gray-700 hover:text-brand-dark"
-                    }`}
-                  >
-                    <span>{label}</span>
-                    {icon}
-                    {isActive(path) && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand" />
-                    )}
-                  </button>
-                ))}
+                {navLinks.map(({ label, path, icon }) => {
+                  const classes = `px-4 py-2 font-medium transition relative flex items-center space-x-1 ${
+                    isActive(path) ? "text-brand-dark" : "text-gray-700 hover:text-brand-dark"
+                  }`;
+                  const content = (
+                    <>
+                      <span>{label}</span>
+                      {icon}
+                      {isActive(path) && (
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand" />
+                      )}
+                    </>
+                  );
+                  return path ? (
+                    <Link
+                      key={label}
+                      to={path}
+                      className={classes}
+                      aria-current={isActive(path) ? "page" : undefined}
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <span key={label} className={`${classes} cursor-default`}>
+                      {content}
+                    </span>
+                  );
+                })}
               </nav>
 
               {/* Right actions */}
@@ -225,19 +229,25 @@ export default function Header() {
           }`}
         >
           <nav className="px-4 pt-2 pb-4 space-y-1">
-            {navLinks.map(({ label, path }) => (
-              <button
-                key={label}
-                onClick={() => go(path)}
-                className={`w-full text-left px-4 py-3 rounded-lg font-medium transition ${
-                  isActive(path)
-                    ? "bg-brand/10 text-brand-dark"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            {navLinks.map(({ label, path }) => {
+              const classes = `block w-full text-left px-4 py-3 rounded-lg font-medium transition ${
+                isActive(path) ? "bg-brand/10 text-brand-dark" : "text-gray-700 hover:bg-gray-100"
+              }`;
+              return path ? (
+                <Link
+                  key={label}
+                  to={path}
+                  className={classes}
+                  aria-current={isActive(path) ? "page" : undefined}
+                >
+                  {label}
+                </Link>
+              ) : (
+                <span key={label} className={`${classes} cursor-default`}>
+                  {label}
+                </span>
+              );
+            })}
           </nav>
 
           <div className="border-t border-gray-100 px-4 py-4">

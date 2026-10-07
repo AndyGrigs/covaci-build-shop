@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLoaderData } from 'react-router-dom';
+import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight, Package } from 'lucide-react';
@@ -122,19 +122,16 @@ export default function ProductDetail() {
     <div className="max-w-7xl mx-auto px-4 py-8">
 
       {/* Breadcrumb */}
-      <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-        <button onClick={() => onNavigate('home')} className="hover:text-gray-700 transition">Главная</button>
+      <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
+        <Link to="/" className="hover:text-gray-700 transition">Главная</Link>
         <span>/</span>
-        <button onClick={() => onNavigate('products')} className="hover:text-gray-700 transition">Каталог</button>
+        <Link to="/catalog" className="hover:text-gray-700 transition">Каталог</Link>
         {category && (
           <>
             <span>/</span>
-            <button
-              onClick={() => onNavigate('products:' + category.slug)}
-              className="hover:text-gray-700 transition"
-            >
+            <Link to={`/catalog/${category.slug}`} className="hover:text-gray-700 transition">
               {category.name}
-            </button>
+            </Link>
           </>
         )}
         <span>/</span>
@@ -142,13 +139,13 @@ export default function ProductDetail() {
       </nav>
 
       {/* Back button */}
-      <button
-        onClick={() => onNavigate('products')}
+      <Link
+        to="/catalog"
         className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition mb-8 group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
         <span className="font-medium">Назад в каталог</span>
-      </button>
+      </Link>
 
       <div className="grid lg:grid-cols-2 gap-12">
 

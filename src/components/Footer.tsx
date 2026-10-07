@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
@@ -19,25 +20,15 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Быстрые ссылки</h3>
             <ul className="space-y-2 text-sm">
+              <li><span className="text-gray-400">О нас</span></li>
               <li>
-                <a href="#" className="hover:text-white transition">
-                  О нас
-                </a>
+                <Link to="/catalog" className="hover:text-white transition">Товары</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
-                  Товары
-                </a>
+                <Link to="/arenda-tehniki" className="hover:text-white transition">Аренда оборудования</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
-                  Аренда оборудования
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Контакты
-                </a>
+                <Link to="/kontakt" className="hover:text-white transition">Контакты</Link>
               </li>
             </ul>
           </div>
@@ -45,26 +36,10 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Служба поддержки</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Центр помощи
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Информация о доставке
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Возврат
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition">
-                  Условия и положения
-                </a>
-              </li>
+              <li><span className="text-gray-400">Центр помощи</span></li>
+              <li><span className="text-gray-400">Информация о доставке</span></li>
+              <li><span className="text-gray-400">Возврат</span></li>
+              <li><span className="text-gray-400">Условия и положения</span></li>
             </ul>
           </div>
 

@@ -1,4 +1,5 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import type { RouteRecord } from 'vite-react-ssg';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
@@ -24,9 +25,18 @@ function Providers() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
+      <ScrollToTop />
       <Header />
       <main className="flex-grow">
         <Outlet />

@@ -1309,16 +1309,16 @@ if (error) {
                         ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ім'я
+                        Имя
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Телефон
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Адмін
+                        Роль
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Дата реєстрації
+                        Дата регистрации
                       </th>
                     </tr>
                   </thead>
@@ -1336,8 +1336,8 @@ if (error) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {user.is_admin
-                            ? <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Адмін</span>
-                            : <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Користувач</span>}
+                            ? <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Админ</span>
+                            : <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Пользователь</span>}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(user.created_at).toLocaleDateString()}
