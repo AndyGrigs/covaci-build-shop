@@ -37,21 +37,15 @@ function MainLayout() {
 }
 
 async function getCategorySlugs(type: 'product' | 'equipment') {
-  try {
-    const { data } = await supabase.from('categories').select('slug').eq('type', type);
-    return data?.map(c => c.slug).filter(Boolean) ?? [];
-  } catch {
-    return [];
-  }
+  const { data, error } = await supabase.from('categories').select('slug').eq('type', type);
+  if (error) throw new Error(`getCategorySlugs(${type}): ${error.message}`);
+  return data.map(c => c.slug).filter(Boolean);
 }
 
 async function getProductSlugs() {
-  try {
-    const { data } = await supabase.from('products').select('slug').eq('is_active', true);
-    return data?.map(p => p.slug).filter(Boolean) ?? [];
-  } catch {
-    return [];
-  }
+  const { data, error } = await supabase.from('products').select('slug').eq('is_active', true);
+  if (error) throw new Error(`getProductSlugs: ${error.message}`);
+  return data.map(p => p.slug).filter(Boolean);
 }
 
 export const routes: RouteRecord[] = [
