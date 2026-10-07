@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLoaderData } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight, Package } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
+import type { ProductLoaderData } from '../lib/productLoader';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -13,9 +14,10 @@ export default function ProductDetail() {
   const { slug: productSlug } = useParams<{ slug: string }>();
   const onNavigate = useAppNav();
   const { user } = useAuth();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initial = useLoaderData() as ProductLoaderData | undefined;
+  const [product, setProduct] = useState<Product | null>(initial?.product ?? null);
+  const [category, setCategory] = useState<Category | null>(initial?.category ?? null);
+  const [loading, setLoading] = useState(!initial?.product);
   const [activeIndex, setActiveIndex] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
   const [added, setAdded] = useState(false);
@@ -26,7 +28,7 @@ export default function ProductDetail() {
 
   const loadProduct = async () => {
     if (!productSlug) return;
-    setLoading(true);
+    if (!product || product.slug !== productSlug) setLoading(true);
     const { data } = await supabase
       .from('products')
       .select('*')

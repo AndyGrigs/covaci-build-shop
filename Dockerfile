@@ -19,7 +19,7 @@ ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 # ENV VITE_CLOUDINARY_CLOUD_NAME=$VITE_CLOUDINARY_CLOUD_NAME
 # ENV VITE_CLOUDINARY_UPLOAD_PRESET=$VITE_CLOUDINARY_UPLOAD_PRESET
 
-RUN npm run build
+RUN npm run build:ssg
 
 # Stage 2: serve
 FROM nginx:alpine
@@ -32,7 +32,7 @@ RUN printf 'server {\n\
     root /usr/share/nginx/html;\n\
     index index.html;\n\
     location / {\n\
-        try_files $uri $uri/ /index.html;\n\
+        try_files $uri $uri.html $uri/ /index.html;\n\
     }\n\
 }\n' > /etc/nginx/conf.d/default.conf
 

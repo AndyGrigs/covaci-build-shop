@@ -14,6 +14,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import { supabase } from './lib/supabase';
+import { productLoader } from './lib/productLoader';
 
 function Providers() {
   return (
@@ -73,6 +74,7 @@ export const routes: RouteRecord[] = [
           {
             path: '/tovar/:slug',
             element: <ProductDetail />,
+            loader: productLoader,
             async getStaticPaths() {
               const slugs = await getProductSlugs();
               return slugs.map(s => `/tovar/${s}`);
