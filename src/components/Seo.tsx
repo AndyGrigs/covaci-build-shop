@@ -22,7 +22,7 @@ export default function Seo({
   jsonLd,
 }: SeoProps) {
   const url = `${SITE_URL}${path}`;
-  const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
+  const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   const img = image || DEFAULT_IMAGE;
 
   return (

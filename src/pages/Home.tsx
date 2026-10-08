@@ -5,6 +5,7 @@ import {
   Truck,
   ShieldCheck,
 } from "lucide-react";
+import Seo from '../components/Seo';
 import { useState, useEffect } from "react";
 import { slugify } from "../utils/slugify";
 import { useAppNav } from "../hooks/useAppNav";
@@ -85,6 +86,11 @@ export default function Home() {
 
   return (
     <div>
+      <Seo
+        title="DenAlex — строительные материалы и аренда оборудования"
+        description="DenAlex: качественные строительные материалы и аренда профессионального оборудования."
+        path="/"
+      />
 
       {/* ===== HERO СЕКЦИЯ ===== */}
       <section className="bg-white overflow-hidden">

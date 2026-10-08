@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import type { RouteRecord } from 'vite-react-ssg';
+import { Head } from 'vite-react-ssg';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -21,6 +22,9 @@ import { catalogLoader } from './lib/catalogLoader';
 function Providers() {
   return (
     <AuthProvider>
+      <Head>
+        <title>DenAlex — строительные материалы и аренда оборудования</title>
+      </Head>
       <Outlet />
     </AuthProvider>
   );

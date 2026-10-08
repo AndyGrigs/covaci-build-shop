@@ -1,8 +1,14 @@
 import { MapPin, Phone, Clock, Mail } from 'lucide-react';
+import Seo from '../components/Seo';
 
 export default function Contact() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
+      <Seo
+        title="Контакты"
+        description="Контакты DenAlex: адрес, телефоны и электронная почта."
+        path="/kontakt"
+      />
       <h1 className="text-4xl font-bold text-gray-900 mb-2">Контакты</h1>
       <p className="text-gray-500 mb-10">Свяжитесь с нами любым удобным способом</p>
 
