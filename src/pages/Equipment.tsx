@@ -1,24 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, Search, Filter, X } from 'lucide-react';
 import type { Database } from '../types/database';
-import { slugify } from '../utils/slugify';
 import { useAppNav } from '../hooks/useAppNav';
+import type { EquipmentLoaderData } from '../lib/equipmentLoader';
+import Seo from '../components/Seo';
 
 type Equipment = Database['public']['Tables']['equipment']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function EquipmentPage() {
+  const { slug } = useParams<{ slug?: string }>();
+  return <EquipmentView key={slug ?? 'all'} />;
+}
+
+function EquipmentView() {
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
-  const [equipment, setEquipment] = useState<Equipment[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initial = useLoaderData() as EquipmentLoaderData | undefined;
+  const [equipment, setEquipment] = useState<Equipment[]>(initial?.equipment ?? []);
+  const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
+  const [loading, setLoading] = useState(!initial);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initial?.category?.id ?? '');
+  const firstLoad = useRef(Boolean(initial));
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -39,14 +47,14 @@ export default function EquipmentPage() {
     if (data) {
       setCategories(data);
       if (slug) {
-        const match = data.find(c => slugify(c.name) === slug);
+        const match = data.find(c => c.slug === slug);
         if (match) setSelectedCategory(match.id);
       }
     }
   };
 
   const loadEquipment = async () => {
-    setLoading(true);
+    if (!firstLoad.current) setLoading(true);
     let query = supabase
       .from('equipment')
       .select('*')
@@ -69,6 +77,7 @@ export default function EquipmentPage() {
         : data;
       setEquipment(filtered);
     }
+    firstLoad.current = false;
     setLoading(false);
   };
 
@@ -124,10 +133,20 @@ export default function EquipmentPage() {
     }
   };
 
+  const activeCategory = categories.find((c) => c.id === selectedCategory);
   const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Seo
+        title={activeCategory ? activeCategory.name : 'Аренда оборудования'}
+        description={
+          activeCategory
+            ? `${activeCategory.name} в аренду в DenAlex: цены за сутки и наличие.`
+            : 'Аренда профессионального оборудования и инструмента в DenAlex: цены за сутки и наличие.'
+        }
+        path={activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki'}
+      />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Аренда оборудования</h1>
         <p className="text-gray-600">Профессиональные инструменты и оборудование для ваших строительных нужд</p>
@@ -162,28 +181,28 @@ export default function EquipmentPage() {
                 Категория
               </label>
               <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory('')}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                <Link
+                  to="/arenda-tehniki"
+                  className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === ''
                       ? 'bg-green-50 text-green-600 font-medium'
                       : 'hover:bg-gray-100'
                   }`}
                 >
                   Все категории
-                </button>
+                </Link>
                 {categories.map((category) => (
-                  <button
+                  <Link
                     key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                    to={`/arenda-tehniki/${category.slug}`}
+                    className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                       selectedCategory === category.id
                         ? 'bg-green-50 text-green-600 font-medium'
                         : 'hover:bg-gray-100'
                     }`}
                   >
                     {category.name}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>

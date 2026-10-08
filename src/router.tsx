@@ -18,6 +18,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { productLoader } from './lib/productLoader';
 import { catalogLoader } from './lib/catalogLoader';
+import { equipmentLoader } from './lib/equipmentLoader';
 
 function Providers() {
   return (
@@ -90,10 +91,11 @@ export const routes: RouteRecord[] = [
               return slugs.map(s => `/tovar/${s}`);
             },
           },
-          { path: '/arenda-tehniki', element: <Equipment /> },
+          { path: '/arenda-tehniki', element: <Equipment />, loader: equipmentLoader },
           {
             path: '/arenda-tehniki/:slug',
             element: <Equipment />,
+            loader: equipmentLoader,
             async getStaticPaths() {
               const slugs = await getCategorySlugs('equipment');
               return slugs.map(s => `/arenda-tehniki/${s}`);

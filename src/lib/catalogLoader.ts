@@ -12,23 +12,27 @@ export type CatalogLoaderData = {
 };
 
 export async function catalogLoader({ params }: LoaderFunctionArgs): Promise<CatalogLoaderData> {
-  const { data: catData, error: catError } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('type', 'product')
-    .order('name');
-  if (catError) throw new Error(`catalogLoader(categories): ${catError.message}`);
-  const categories = catData ?? [];
+  try {
+    const { data: catData, error: catError } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('type', 'product')
+      .order('name');
+    if (catError) throw new Error(`catalogLoader(categories): ${catError.message}`);
+    const categories = catData ?? [];
 
-  const category = params.slug
-    ? categories.find((c) => c.slug === params.slug) ?? null
-    : null;
+    const category = params.slug
+      ? categories.find((c) => c.slug === params.slug) ?? null
+      : null;
 
-  let query = supabase.from('products').select('*').eq('is_active', true).order('name');
-  if (category) query = query.eq('category_id', category.id);
+    let query = supabase.from('products').select('*').eq('is_active', true).order('name');
+    if (category) query = query.eq('category_id', category.id);
 
-  const { data: prodData, error: prodError } = await query;
-  if (prodError) throw new Error(`catalogLoader(products): ${prodError.message}`);
+    const { data: prodData, error: prodError } = await query;
+    if (prodError) throw new Error(`catalogLoader(products): ${prodError.message}`);
 
-  return { categories, category, products: prodData ?? [] };
+    return { categories, category, products: prodData ?? [] };
+  } catch {
+    return { categories: [], category: null, products: [] };
+  }
 }

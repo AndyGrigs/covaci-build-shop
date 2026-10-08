@@ -14,24 +14,28 @@ export async function productLoader({ params }: LoaderFunctionArgs): Promise<Pro
   const slug = params.slug;
   if (!slug) return { product: null, category: null };
 
-  const { data: product, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('slug', slug)
-    .maybeSingle();
-
-  if (error) throw new Error(`productLoader(${slug}): ${error.message}`);
-  if (!product) return { product: null, category: null };
-
-  let category: Category | null = null;
-  if (product.category_id) {
-    const { data } = await supabase
-      .from('categories')
+  try {
+    const { data: product, error } = await supabase
+      .from('products')
       .select('*')
-      .eq('id', product.category_id)
+      .eq('slug', slug)
       .maybeSingle();
-    category = data;
-  }
 
-  return { product, category };
+    if (error) throw new Error(`productLoader(${slug}): ${error.message}`);
+    if (!product) return { product: null, category: null };
+
+    let category: Category | null = null;
+    if (product.category_id) {
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('id', product.category_id)
+        .maybeSingle();
+      category = data;
+    }
+
+    return { product, category };
+  } catch {
+    return { product: null, category: null };
+  }
 }
