@@ -6,6 +6,7 @@ import { ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight, Package } from 'luc
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { ProductLoaderData } from '../lib/productLoader';
+import Seo from '../components/Seo';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -120,6 +121,34 @@ export default function ProductDetail() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Seo
+        title={product.name}
+        description={(
+          product.description?.trim() ||
+          `${product.name} в DenAlex: цена и наличие.`
+        ).slice(0, 160)}
+        path={`/tovar/${product.slug}`}
+        image={images[0]}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          description: product.description ?? undefined,
+          image: images.length > 0 ? images : undefined,
+          category: category?.name,
+          offers: {
+            '@type': 'Offer',
+            url: `https://den-alex.com/tovar/${product.slug}`,
+            priceCurrency: 'MDL',
+            price: product.price,
+            availability:
+              product.stock_quantity > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+          },
+        }}
+      />
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-gray-500 mb-6">

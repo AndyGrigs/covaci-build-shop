@@ -6,6 +6,7 @@ import { ShoppingCart, Search, Filter } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { CatalogLoaderData } from '../lib/catalogLoader';
+import Seo from '../components/Seo';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -114,8 +115,19 @@ function ProductsView() {
     setAddingToCart(null);
   };
 
+  const activeCategory = categories.find((c) => c.id === selectedCategory);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Seo
+        title={activeCategory ? activeCategory.name : 'Строительные материалы'}
+        description={
+          activeCategory
+            ? `${activeCategory.name} в DenAlex: цены и наличие.`
+            : 'Каталог строительных материалов DenAlex: цены и наличие.'
+        }
+        path={activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog'}
+      />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Строительные материалы</h1>
         <p className="text-gray-600">Просмотрите наш обширный каталог качественных строительных материалов</p>
