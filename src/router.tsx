@@ -16,6 +16,7 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { productLoader } from './lib/productLoader';
+import { catalogLoader } from './lib/catalogLoader';
 
 function Providers() {
   return (
@@ -66,10 +67,11 @@ export const routes: RouteRecord[] = [
         element: <MainLayout />,
         children: [
           { path: '/', element: <Home /> },
-          { path: '/catalog', element: <Products /> },
+          { path: '/catalog', element: <Products />, loader: catalogLoader },
           {
             path: '/catalog/:slug',
             element: <Products />,
+            loader: catalogLoader,
             async getStaticPaths() {
               const slugs = await getCategorySlugs('product');
               return slugs.map(s => `/catalog/${s}`);

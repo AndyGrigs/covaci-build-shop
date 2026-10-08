@@ -1,25 +1,34 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, Search, Filter } from 'lucide-react';
 import type { Database } from '../types/database';
-import { slugify } from '../utils/slugify';
 import { useAppNav } from '../hooks/useAppNav';
+import type { CatalogLoaderData } from '../lib/catalogLoader';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function Products() {
+  const { slug } = useParams<{ slug?: string }>();
+  // key перезапускає компонент при переході між категоріями,
+  // щоб початковий стан знову взявся з даних loader
+  return <ProductsView key={slug ?? 'all'} />;
+}
+
+function ProductsView() {
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initial = useLoaderData() as CatalogLoaderData | undefined;
+  const [products, setProducts] = useState<Product[]>(initial?.products ?? []);
+  const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
+  const [loading, setLoading] = useState(!initial);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initial?.category?.id ?? '');
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const firstLoad = useRef(Boolean(initial));
 
   useEffect(() => {
     loadCategories();
@@ -35,14 +44,14 @@ export default function Products() {
     if (data) {
       setCategories(data);
       if (slug) {
-        const match = data.find(c => slugify(c.name) === slug);
+        const match = data.find(c => c.slug === slug);
         if (match) setSelectedCategory(match.id);
       }
     }
   };
 
   const loadProducts = async () => {
-    setLoading(true);
+    if (!firstLoad.current) setLoading(true);
     let query = supabase
       .from('products')
       .select('*')
@@ -64,6 +73,7 @@ export default function Products() {
         : data;
       setProducts(filtered);
     }
+    firstLoad.current = false;
     setLoading(false);
   };
 
@@ -140,28 +150,28 @@ export default function Products() {
                 Категория
               </label>
               <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory('')}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                <Link
+                  to="/catalog"
+                  className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === ''
                       ? 'bg-yellow-50 text-yellow-600 font-medium'
                       : 'hover:bg-gray-100'
                   }`}
                 >
                   Все категории
-                </button>
+                </Link>
                 {categories.map((category) => (
-                  <button
+                  <Link
                     key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition ${
+                    to={`/catalog/${category.slug}`}
+                    className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                       selectedCategory === category.id
                         ? 'bg-yellow-50 text-yellow-600 font-medium'
                         : 'hover:bg-gray-100'
                     }`}
                   >
                     {category.name}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -183,8 +193,7 @@ export default function Products() {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                  onClick={() => onNavigate(`product-detail:${product.slug}`)}
+                  className="relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                     {product.images?.[0] ? (
@@ -200,7 +209,11 @@ export default function Products() {
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <Link to={`/tovar/${product.slug}`} className="after:absolute after:inset-0">
+                        {product.name}
+                      </Link>
+                    </h3>
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                       {product.description}
                     </p>
@@ -220,9 +233,9 @@ export default function Products() {
                       </span>
                     </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                      onClick={() => addToCart(product)}
                       disabled={product.stock_quantity === 0 || addingToCart === product.id}
-                      className="w-full bg-brand text-gray-900 py-2 rounded-lg font-medium hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
+                      className="relative z-10 w-full bg-brand text-gray-900 py-2 rounded-lg font-medium hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
                     >
                       <ShoppingCart className="w-5 h-5" />
                       <span>
