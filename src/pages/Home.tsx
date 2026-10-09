@@ -7,10 +7,12 @@ import {
 } from "lucide-react";
 import Seo from '../components/Seo';
 import { useState, useEffect } from "react";
+import { Link, useLoaderData } from "react-router-dom";
 import { slugify } from "../utils/slugify";
 import { useAppNav } from "../hooks/useAppNav";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
+import type { HomeLoaderData } from "../lib/homeLoader";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -39,9 +41,10 @@ const EQUIPMENT_IMAGES: Record<string, string> = {
 
 export default function Home() {
   const onNavigate = useAppNav();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [equipment, setEquipment] = useState<Equipment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initial = useLoaderData() as HomeLoaderData | undefined;
+  const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
+  const [equipment, setEquipment] = useState<Equipment[]>(initial?.equipment ?? []);
+  const [loading, setLoading] = useState(!initial);
 
   useEffect(() => {
     const loadCategories = supabase
@@ -109,20 +112,20 @@ export default function Home() {
                 и професиональные услуги
               </p>
               <div className="flex flex-wrap gap-4">
-                <button
-                  onClick={() => onNavigate("products")}
+                <Link
+                  to="/catalog"
                   className="inline-flex items-center space-x-2 px-7 py-3.5 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition"
                 >
                   <span>Каталог товаров</span>
                   <ArrowRight className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => onNavigate("equipment")}
+                </Link>
+                <Link
+                  to="/arenda-tehniki"
                   className="inline-flex items-center space-x-2 px-7 py-3.5 border-2 border-gray-300 text-gray-700 font-semibold rounded hover:border-gray-400 transition"
                 >
                   <span>Аренда техники</span>
                   <ArrowRight className="w-5 h-5" />
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -269,13 +272,13 @@ export default function Home() {
                 Аренда строительной и спецтехники на выгодных условиях. Опытные операторы и полное техническое обслуживание.
               </p>
 
-              <button
-                onClick={() => onNavigate("equipment")}
+              <Link
+                to="/arenda-tehniki"
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition w-fit"
               >
                 <span>Посмотреть технику</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
             </div>
 
             {/* Правая часть — карточки техники */}

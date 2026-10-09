@@ -19,6 +19,7 @@ import { supabase } from './lib/supabase';
 import { productLoader } from './lib/productLoader';
 import { catalogLoader } from './lib/catalogLoader';
 import { equipmentLoader } from './lib/equipmentLoader';
+import { homeLoader } from './lib/homeLoader';
 
 function Providers() {
   return (
@@ -71,7 +72,7 @@ export const routes: RouteRecord[] = [
       {
         element: <MainLayout />,
         children: [
-          { path: '/', element: <Home /> },
+          { path: '/', element: <Home />, loader: homeLoader },
           { path: '/catalog', element: <Products />, loader: catalogLoader },
           {
             path: '/catalog/:slug',
