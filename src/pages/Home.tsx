@@ -8,7 +8,6 @@ import {
 import Seo from '../components/Seo';
 import { useState, useEffect } from "react";
 import { Link, useLoaderData } from "react-router-dom";
-import { slugify } from "../utils/slugify";
 import { useAppNav } from "../hooks/useAppNav";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
@@ -211,10 +210,10 @@ export default function Home() {
           {!loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((category) => (
-                <button
+                <Link
                   key={category.id}
-                  onClick={() => onNavigate("products:" + slugify(category.name))}
-                  className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
+                  to={`/catalog/${category.slug}`}
+                  className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
                 >
                   {/* Фото категории */}
                   <div className="h-36 overflow-hidden bg-gray-50">
@@ -233,7 +232,7 @@ export default function Home() {
                       <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
                     </div>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
           ) : (
@@ -305,7 +304,7 @@ export default function Home() {
                           {item.name}
                         </h3>
                         <p className="text-yellow-500 font-bold text-sm mb-3">
-                          от {item.daily_rate.toLocaleString("ru-RU")} грн
+                          от {item.daily_rate.toLocaleString("ru-RU")} MDL
                           <span className="text-gray-400 font-normal text-xs"> / смена</span>
                         </p>
                         <button
