@@ -12,6 +12,13 @@ function htmlFiles(dir) {
 const problems = [];
 for (const file of htmlFiles('dist')) {
   const html = readFileSync(file, 'utf8');
+
+  if (html.includes('Unexpected Application Error')) {
+    const msg = html.match(/<h3[^>]*>([^<]*)<\/h3>/)?.[1] ?? 'невідома помилка';
+    problems.push(`${file}: замість сторінки зібрано екран помилки: ${msg}`);
+    continue;
+  }
+
   const titles = (html.match(/<title[\s>]/g) || []).length;
   if (titles !== 1) problems.push(`${file}: <title> x${titles}`);
 }

@@ -8,7 +8,30 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase: SupabaseClient<Database> = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Retries only reads (GET/HEAD) on network failures, e.g. "fetch failed" during SSG build.
+// Writes are not retried to avoid duplicating data.
+const retryingFetch: typeof fetch = async (input, init) => {
+  const method = (
+    init?.method ?? (input instanceof Request ? input.method : 'GET')
+  ).toUpperCase();
+  const attempts = method === 'GET' || method === 'HEAD' ? 4 : 1;
+
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fetch(input, init);
+    } catch (error) {
+      const aborted = error instanceof DOMException && error.name === 'AbortError';
+      if (aborted || attempt >= attempts) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 300 * 2 ** (attempt - 1)));
+    }
+  }
+};
+
+export const supabase: SupabaseClient<Database> = createClient<Database>(
+  supabaseUrl,
+  supabaseAnonKey,
+  { global: { fetch: retryingFetch } }
+);
 
 // Function to check if user is admin
 export const checkIsAdmin = async (userId: string): Promise<boolean> => {
