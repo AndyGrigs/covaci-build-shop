@@ -2,7 +2,7 @@ import { Head } from 'vite-react-ssg';
 
 const SITE_URL = 'https://den-alex.com';
 const SITE_NAME = 'DenAlex';
-const DEFAULT_IMAGE = `${SITE_URL}/covaci-site.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/shop.jpg`;
 
 type SeoProps = {
   title: string;

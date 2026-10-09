@@ -132,7 +132,7 @@ export default function Home() {
             <div className="flex-1 relative flex items-center justify-center">
               <img
                 // src="https://i.pinimg.com/1200x/56/69/f7/5669f7b86249c9e966ef3d16847d84a3.jpg"
-                src="/shop.png"
+                src="/shop.jpg"
                 alt="Строительная техника"
                 className="w-full max-w-xl object-contain drop-shadow-2xl rounded-lg"
               />
