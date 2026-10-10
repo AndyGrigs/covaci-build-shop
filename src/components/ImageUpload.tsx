@@ -7,6 +7,8 @@ interface ImageUploadProps {
   onImageUploaded: (url: string) => void;
   onImageRemoved?: () => void;
   compact?: boolean;
+  /** false — only clear the slot, do not delete the file from Storage (edit mode) */
+  deleteFileOnRemove?: boolean;
 }
 
 export default function ImageUpload({
@@ -14,6 +16,7 @@ export default function ImageUpload({
   onImageUploaded,
   onImageRemoved,
   compact = false,
+  deleteFileOnRemove = true,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImageUrl || null);
@@ -101,6 +104,8 @@ export default function ImageUpload({
     if (onImageRemoved) {
       onImageRemoved();
     }
+
+    if (!deleteFileOnRemove) return;
 
     // Опціонально: видалити файл з Storage
     try {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { supabase } from "../lib/supabase";
 import { toFormImages, toDbImages } from "../lib/images";
 import { useAuth } from "../contexts/AuthContext";
@@ -840,16 +840,14 @@ if (error) {
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Изображения
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Действия
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {products.map((product) => (
-                      <tr key={product.id}>
+                      <Fragment key={product.id}>
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {product.id.slice(0, 8)}
                         </td>
@@ -914,24 +912,6 @@ if (error) {
                                 <option value="inactive">Неактивен</option>
                               </select>
                             </td>
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col gap-1 min-w-[200px]">
-                                {(editingProduct.images ?? []).map((url, i) => (
-                                  <input
-                                    key={i}
-                                    type="url"
-                                    value={url}
-                                    onChange={(e) => {
-                                      const next = [...(editingProduct.images ?? [])];
-                                      next[i] = e.target.value;
-                                      setEditingProduct({ ...editingProduct, images: next });
-                                    }}
-                                    placeholder={i === 0 ? "Главное фото (URL)" : `Фото ${i + 1} (URL)`}
-                                    className="w-full px-3 py-1 border border-gray-300 rounded-lg text-xs"
-                                  />
-                                ))}
-                              </div>
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={handleUpdateProduct}
@@ -969,13 +949,6 @@ if (error) {
                                 {product.is_active ? "Активен" : "Неактивен"}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {product.image_url ? (
-                                <img src={product.image_url} alt={product.name} className="w-10 h-10 object-cover rounded" />
-                              ) : (
-                                <span className="text-gray-400 text-xs">Нет</span>
-                              )}
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={() => setEditingProduct({ ...product, images: toFormImages(product.images, product.image_url) })}
@@ -993,6 +966,36 @@ if (error) {
                           </>
                         )}
                       </tr>
+                      {editingProduct?.id === product.id && (
+                        <tr className="bg-gray-50">
+                          <td colSpan={6} className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-700 mb-2">
+                              Фотографии (первое — главное)
+                            </p>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {(editingProduct.images ?? []).map((url, index) => (
+                                <ImageUpload
+                                  key={index}
+                                  compact
+                                  deleteFileOnRemove={false}
+                                  currentImageUrl={url}
+                                  onImageUploaded={(newUrl) => {
+                                    const imgs = [...(editingProduct.images ?? [])];
+                                    imgs[index] = newUrl;
+                                    setEditingProduct({ ...editingProduct, images: imgs });
+                                  }}
+                                  onImageRemoved={() => {
+                                    const imgs = [...(editingProduct.images ?? [])];
+                                    imgs[index] = "";
+                                    setEditingProduct({ ...editingProduct, images: imgs });
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>
@@ -1142,16 +1145,14 @@ if (error) {
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Изображения
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Действия
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {equipment.map((item) => (
-                      <tr key={item.id}>
+                      <Fragment key={item.id}>
+                      <tr>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {item.id.slice(0, 8)}
                         </td>
@@ -1217,24 +1218,6 @@ if (error) {
                                 <option value="unavailable">Недоступно</option>
                               </select>
                             </td>
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col gap-1 min-w-[200px]">
-                                {(editingEquipment.images ?? []).map((url, i) => (
-                                  <input
-                                    key={i}
-                                    type="url"
-                                    value={url}
-                                    onChange={(e) => {
-                                      const next = [...(editingEquipment.images ?? [])];
-                                      next[i] = e.target.value;
-                                      setEditingEquipment({ ...editingEquipment, images: next });
-                                    }}
-                                    placeholder={i === 0 ? "Главное фото (URL)" : `Фото ${i + 1} (URL)`}
-                                    className="w-full px-3 py-1 border border-gray-300 rounded-lg text-xs"
-                                  />
-                                ))}
-                              </div>
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={handleUpdateEquipment}
@@ -1272,13 +1255,6 @@ if (error) {
                                 {item.is_available ? "Доступно" : "Недоступно"}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {item.image_url ? (
-                                <img src={item.image_url} alt={item.name} className="w-10 h-10 object-cover rounded" />
-                              ) : (
-                                <span className="text-gray-400 text-xs">Нет</span>
-                              )}
-                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={() => setEditingEquipment({ ...item, images: toFormImages(item.images, item.image_url) })}
@@ -1296,6 +1272,36 @@ if (error) {
                           </>
                         )}
                       </tr>
+                      {editingEquipment?.id === item.id && (
+                        <tr className="bg-gray-50">
+                          <td colSpan={6} className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-700 mb-2">
+                              Фотографии (первое — главное)
+                            </p>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {(editingEquipment.images ?? []).map((url, index) => (
+                                <ImageUpload
+                                  key={index}
+                                  compact
+                                  deleteFileOnRemove={false}
+                                  currentImageUrl={url}
+                                  onImageUploaded={(newUrl) => {
+                                    const imgs = [...(editingEquipment.images ?? [])];
+                                    imgs[index] = newUrl;
+                                    setEditingEquipment({ ...editingEquipment, images: imgs });
+                                  }}
+                                  onImageRemoved={() => {
+                                    const imgs = [...(editingEquipment.images ?? [])];
+                                    imgs[index] = "";
+                                    setEditingEquipment({ ...editingEquipment, images: imgs });
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>
