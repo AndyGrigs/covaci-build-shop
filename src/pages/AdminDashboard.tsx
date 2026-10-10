@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { toFormImages, toDbImages } from "../lib/images";
 import { useAuth } from "../contexts/AuthContext";
 import {
   Package,
@@ -189,6 +190,7 @@ if (error) {
   const handleAddProduct = async () => {
     if (!newProduct.name.trim()) return;
 
+    const { images, image_url } = toDbImages(newProduct.images);
     const { data, error } = await supabase
       .from("products")
       .insert([
@@ -199,8 +201,8 @@ if (error) {
           unit: newProduct.unit,
           stock_quantity: parseInt(newProduct.stock_quantity) || 0,
           category_id: newProduct.category_id,
-          images: newProduct.images.filter((url) => url !== ""),
-          image_url: newProduct.images[0] || null,
+          images,
+          image_url,
           is_active: true,
         },
       ])
@@ -226,6 +228,8 @@ if (error) {
   const handleUpdateProduct = async () => {
     if (!editingProduct) return;
 
+    const { images, image_url } = toDbImages(editingProduct.images ?? []);
+
     const { error } = await supabase
       .from("products")
       .update({
@@ -235,7 +239,8 @@ if (error) {
         unit: editingProduct.unit,
         stock_quantity: editingProduct.stock_quantity,
         category_id: editingProduct.category_id,
-        image_url: editingProduct.image_url,
+        images,
+        image_url,
         is_active: editingProduct.is_active,
       })
       .eq("id", editingProduct.id);
@@ -245,7 +250,9 @@ if (error) {
     } else {
       setProducts(
         products.map((prod) =>
-          prod.id === editingProduct.id ? editingProduct : prod,
+          prod.id === editingProduct.id
+            ? { ...editingProduct, images, image_url }
+            : prod,
         ),
       );
       setEditingProduct(null);
@@ -265,6 +272,7 @@ if (error) {
   const handleAddEquipment = async () => {
     if (!newEquipment.name.trim()) return;
 
+    const { images, image_url } = toDbImages(newEquipment.images);
     const { data, error } = await supabase
       .from("equipment")
       .insert([
@@ -273,8 +281,8 @@ if (error) {
           description: newEquipment.description,
           daily_rate: parseFloat(newEquipment.daily_rate) || 0,
           deposit_amount: parseFloat(newEquipment.deposit_amount) || 0,
-          images: newEquipment.images.filter((url) => url !== ""),
-          image_url: newEquipment.images[0] || null,
+          images,
+          image_url,
           category_id: newEquipment.category_id || null,
           is_available: newEquipment.is_available,
         },
@@ -301,6 +309,8 @@ if (error) {
   const handleUpdateEquipment = async () => {
     if (!editingEquipment) return;
 
+    const { images, image_url } = toDbImages(editingEquipment.images ?? []);
+
     const { error } = await supabase
       .from("equipment")
       .update({
@@ -308,7 +318,8 @@ if (error) {
         description: editingEquipment.description,
         daily_rate: editingEquipment.daily_rate,
         deposit_amount: editingEquipment.deposit_amount,
-        image_url: editingEquipment.image_url,
+        images,
+        image_url,
         category_id: editingEquipment.category_id,
         is_available: editingEquipment.is_available,
       })
@@ -319,7 +330,9 @@ if (error) {
     } else {
       setEquipment(
         equipment.map((eq) =>
-          eq.id === editingEquipment.id ? editingEquipment : eq,
+          eq.id === editingEquipment.id
+            ? { ...editingEquipment, images, image_url }
+            : eq,
         ),
       );
       setEditingEquipment(null);
@@ -827,6 +840,9 @@ if (error) {
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Изображения
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Действия
                       </th>
                     </tr>
@@ -898,6 +914,24 @@ if (error) {
                                 <option value="inactive">Неактивен</option>
                               </select>
                             </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1 min-w-[200px]">
+                                {(editingProduct.images ?? []).map((url, i) => (
+                                  <input
+                                    key={i}
+                                    type="url"
+                                    value={url}
+                                    onChange={(e) => {
+                                      const next = [...(editingProduct.images ?? [])];
+                                      next[i] = e.target.value;
+                                      setEditingProduct({ ...editingProduct, images: next });
+                                    }}
+                                    placeholder={i === 0 ? "Главное фото (URL)" : `Фото ${i + 1} (URL)`}
+                                    className="w-full px-3 py-1 border border-gray-300 rounded-lg text-xs"
+                                  />
+                                ))}
+                              </div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={handleUpdateProduct}
@@ -935,9 +969,16 @@ if (error) {
                                 {product.is_active ? "Активен" : "Неактивен"}
                               </span>
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {product.image_url ? (
+                                <img src={product.image_url} alt={product.name} className="w-10 h-10 object-cover rounded" />
+                              ) : (
+                                <span className="text-gray-400 text-xs">Нет</span>
+                              )}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
-                                onClick={() => setEditingProduct(product)}
+                                onClick={() => setEditingProduct({ ...product, images: toFormImages(product.images, product.image_url) })}
                                 className="text-yellow-600 hover:text-yellow-800 mr-2"
                               >
                                 <Edit className="w-4 h-4" />
@@ -1101,6 +1142,9 @@ if (error) {
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Изображения
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Действия
                       </th>
                     </tr>
@@ -1173,6 +1217,24 @@ if (error) {
                                 <option value="unavailable">Недоступно</option>
                               </select>
                             </td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col gap-1 min-w-[200px]">
+                                {(editingEquipment.images ?? []).map((url, i) => (
+                                  <input
+                                    key={i}
+                                    type="url"
+                                    value={url}
+                                    onChange={(e) => {
+                                      const next = [...(editingEquipment.images ?? [])];
+                                      next[i] = e.target.value;
+                                      setEditingEquipment({ ...editingEquipment, images: next });
+                                    }}
+                                    placeholder={i === 0 ? "Главное фото (URL)" : `Фото ${i + 1} (URL)`}
+                                    className="w-full px-3 py-1 border border-gray-300 rounded-lg text-xs"
+                                  />
+                                ))}
+                              </div>
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
                                 onClick={handleUpdateEquipment}
@@ -1210,9 +1272,16 @@ if (error) {
                                 {item.is_available ? "Доступно" : "Недоступно"}
                               </span>
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {item.image_url ? (
+                                <img src={item.image_url} alt={item.name} className="w-10 h-10 object-cover rounded" />
+                              ) : (
+                                <span className="text-gray-400 text-xs">Нет</span>
+                              )}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <button
-                                onClick={() => setEditingEquipment(item)}
+                                onClick={() => setEditingEquipment({ ...item, images: toFormImages(item.images, item.image_url) })}
                                 className="text-yellow-600 hover:text-yellow-800 mr-2"
                               >
                                 <Edit className="w-4 h-4" />
