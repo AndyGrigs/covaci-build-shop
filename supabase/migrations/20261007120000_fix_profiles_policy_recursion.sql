@@ -1,4 +1,4 @@
-﻿-- Fix: infinite recursion in profiles SELECT policy (42P17).
+-- Fix: infinite recursion in profiles SELECT policy (42P17).
 -- The policy queried profiles from within a profiles policy.
 -- is_admin() is SECURITY DEFINER, so it reads profiles without re-triggering RLS.
 
