@@ -52,10 +52,21 @@ export default function Header() {
     loadCartCount();
 
     const channel = supabase
-      .channel("header-cart-count")
+      .channel(`header-cart-count-${user.id}`)
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
+        { event: "INSERT", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
+        loadCartCount
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
+        loadCartCount
+      )
+      .on(
+        // DELETE нельзя фильтровать по user_id — просто пересчитываем
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "cart_items" },
         loadCartCount
       )
       .subscribe();
