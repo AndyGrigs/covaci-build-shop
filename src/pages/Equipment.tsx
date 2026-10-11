@@ -31,6 +31,7 @@ function EquipmentView() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [busyRanges, setBusyRanges] = useState<{ start_date: string; end_date: string }[]>([]);
 
   useEffect(() => {
     loadCategories();
@@ -94,6 +95,28 @@ function EquipmentView() {
     return days > 0 ? days : 0;
   };
 
+  useEffect(() => {
+    if (!selectedEquipment) {
+      setBusyRanges([]);
+      return;
+    }
+    let cancelled = false;
+    supabase
+      .rpc('equipment_busy_ranges', { p_equipment_id: selectedEquipment.id })
+      .then(({ data }) => {
+        if (!cancelled) setBusyRanges(data ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedEquipment]);
+
+  // Рядки 'YYYY-MM-DD' коректно порівнюються як текст
+  const hasConflict =
+    !!startDate &&
+    !!endDate &&
+    busyRanges.some((b) => startDate < b.end_date && endDate > b.start_date);
+
   const handleRentalRequest = async () => {
     if (!user) {
       onNavigate('login');
@@ -125,7 +148,11 @@ function EquipmentView() {
     setSubmitting(false);
 
     if (error) {
-      alert('Ошибка при отправке запроса на аренду');
+      if (error.code === '23P01') {
+        alert('Это оборудование уже занято на выбранные даты. Пожалуйста, выберите другие даты.');
+      } else {
+        alert('Ошибка при отправке запроса на аренду');
+      }
     } else {
       alert('Запрос на аренду успешно отправлен!');
       setSelectedEquipment(null);
@@ -296,6 +323,19 @@ function EquipmentView() {
             </div>
 
             <div className="space-y-4">
+              {busyRanges.length > 0 && (
+                <div className="text-sm text-gray-600 mb-3">
+                  <p className="font-medium">Занято:</p>
+                  <ul>
+                    {busyRanges.map((b, i) => (
+                      <li key={i}>
+                        {new Date(b.start_date).toLocaleDateString('ru-RU')} —{' '}
+                        {new Date(b.end_date).toLocaleDateString('ru-RU')}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Дата начала
@@ -322,6 +362,12 @@ function EquipmentView() {
                 />
               </div>
 
+              {hasConflict && (
+                <p className="text-sm text-red-600 mb-3">
+                  Выбранные даты пересекаются с занятым периодом.
+                </p>
+              )}
+
               {startDate && endDate && calculateDays() > 0 && (
                 <div className="bg-green-50 p-4 rounded-lg">
                   <div className="flex justify-between mb-2">
@@ -347,7 +393,7 @@ function EquipmentView() {
 
               <button
                 onClick={handleRentalRequest}
-                disabled={!startDate || !endDate || calculateDays() <= 0 || submitting}
+                disabled={!startDate || !endDate || calculateDays() <= 0 || submitting || hasConflict}
                 className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? 'Отправка...' : 'Отправить запрос'}

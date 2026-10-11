@@ -360,7 +360,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      equipment_busy_ranges: {
+        Args: { p_equipment_id: string }
+        Returns: { start_date: string; end_date: string }[]
+      }
     }
     Enums: {
       [_ in never]: never
