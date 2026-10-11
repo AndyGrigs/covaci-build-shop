@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,7 +23,7 @@ function ProductsView() {
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
   const initial = useLoaderData() as CatalogLoaderData | undefined;
-  const [products, setProducts] = useState<Product[]>(initial?.products ?? []);
+  const [allProducts, setAllProducts] = useState<Product[]>(initial?.products ?? []);
   const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
   const [loading, setLoading] = useState(!initial);
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,23 +64,26 @@ function ProductsView() {
     }
 
     const { data } = await query;
+    if (data) setAllProducts(data);
 
-    if (data) {
-      const filtered = searchTerm
-        ? data.filter(p =>
-            p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.description?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : data;
-      setProducts(filtered);
-    }
     firstLoad.current = false;
     setLoading(false);
   };
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory]); // запрос зависит только от категории
+
+  // Фильтр по тексту считается при рендере, без запросов к БД
+  const products = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return allProducts;
+    return allProducts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q),
+    );
+  }, [allProducts, searchTerm]);
 
   const addToCart = async (product: Product) => {
     if (!user) {

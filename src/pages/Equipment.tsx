@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,7 +21,7 @@ function EquipmentView() {
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
   const initial = useLoaderData() as EquipmentLoaderData | undefined;
-  const [equipment, setEquipment] = useState<Equipment[]>(initial?.equipment ?? []);
+  const [allEquipment, setAllEquipment] = useState<Equipment[]>(initial?.equipment ?? []);
   const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
   const [loading, setLoading] = useState(!initial);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +34,6 @@ function EquipmentView() {
 
   useEffect(() => {
     loadCategories();
-    loadEquipment();
   }, []);
 
   const loadCategories = async () => {
@@ -67,23 +66,25 @@ function EquipmentView() {
     }
 
     const { data } = await query;
+    if (data) setAllEquipment(data);
 
-    if (data) {
-      const filtered = searchTerm
-        ? data.filter(e =>
-            e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            e.description?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : data;
-      setEquipment(filtered);
-    }
     firstLoad.current = false;
     setLoading(false);
   };
 
   useEffect(() => {
     loadEquipment();
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory]);
+
+  const equipment = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return allEquipment;
+    return allEquipment.filter(
+      (e) =>
+        e.name.toLowerCase().includes(q) ||
+        e.description?.toLowerCase().includes(q),
+    );
+  }, [allEquipment, searchTerm]);
 
   const calculateDays = () => {
     if (!startDate || !endDate) return 0;
