@@ -8,6 +8,7 @@ import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { ProductLoaderData } from '../lib/productLoader';
 import Seo from '../components/Seo';
+import NotFound from './NotFound';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -31,23 +32,26 @@ export default function ProductDetail() {
   const loadProduct = async () => {
     if (!productSlug) return;
     if (!product || product.slug !== productSlug) setLoading(true);
+
     const { data } = await supabase
       .from('products')
       .select('*')
       .eq('slug', productSlug)
-      .single();
+      .maybeSingle();
 
-    if (data) {
-      setProduct(data);
-      if (data.category_id) {
-        const { data: cat } = await supabase
-          .from('categories')
-          .select('*')
-          .eq('id', data.category_id)
-          .single();
-        if (cat) setCategory(cat);
-      }
+    setProduct(data ?? null);
+
+    if (data?.category_id) {
+      const { data: cat } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('id', data.category_id)
+        .maybeSingle();
+      setCategory(cat ?? null);
+    } else {
+      setCategory(null);
     }
+
     setLoading(false);
   };
 
@@ -106,18 +110,7 @@ export default function ProductDetail() {
   }
 
   if (!product) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <p className="text-gray-500 text-lg mb-4">Товар не найден</p>
-        <button
-          onClick={() => onNavigate('products')}
-          className="inline-flex items-center space-x-2 text-yellow-600 hover:underline"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Вернуться в каталог</span>
-        </button>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (

@@ -25,26 +25,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
+    let currentUserId: string | null = null;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      (() => {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        currentUserId = session?.user?.id ?? null;
         setUser(session?.user ?? null);
         if (session?.user) {
           loadProfile(session.user.id);
         } else {
-          setProfile(null);
-          setIsAdmin(false);
           setLoading(false);
         }
-      })();
+      })
+      .catch(() => setLoading(false));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const incomingId = session?.user?.id ?? null;
+      if (incomingId === currentUserId) return;
+      currentUserId = incomingId;
+
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setProfile(null);
+        setIsAdmin(false);
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
