@@ -189,6 +189,9 @@ if (error) {
     }
   };
 
+  const categoryName = (id: string | null) =>
+    categories.find((c) => c.id === id)?.name ?? "—";
+
   const handleAddProduct = async () => {
     if (!newProduct.name.trim()) return;
 
@@ -839,6 +842,9 @@ if (error) {
                         Кол-во
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Категория
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -897,6 +903,27 @@ if (error) {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <select
+                                value={editingProduct.category_id ?? ""}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    category_id: e.target.value || null,
+                                  })
+                                }
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              >
+                                <option value="">Без категории</option>
+                                {categories
+                                  .filter((c) => c.type === "product")
+                                  .map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                      {c.name}
+                                    </option>
+                                  ))}
+                              </select>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <select
                                 value={
                                   editingProduct.is_active
                                     ? "active"
@@ -940,6 +967,9 @@ if (error) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {product.stock_quantity}
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {categoryName(product.category_id)}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -970,7 +1000,7 @@ if (error) {
                       </tr>
                       {editingProduct?.id === product.id && (
                         <tr className="bg-gray-50">
-                          <td colSpan={6} className="px-6 py-4">
+                          <td colSpan={7} className="px-6 py-4">
                             <p className="text-sm font-medium text-gray-700 mb-2">
                               Фотографии (первое — главное)
                             </p>
@@ -1144,6 +1174,9 @@ if (error) {
                         Депозит
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Категория
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Статус
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1202,6 +1235,27 @@ if (error) {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <select
+                                value={editingEquipment.category_id ?? ""}
+                                onChange={(e) =>
+                                  setEditingEquipment({
+                                    ...editingEquipment,
+                                    category_id: e.target.value || null,
+                                  })
+                                }
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              >
+                                <option value="">Без категории</option>
+                                {categories
+                                  .filter((c) => c.type === "equipment")
+                                  .map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                      {c.name}
+                                    </option>
+                                  ))}
+                              </select>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <select
                                 value={
                                   editingEquipment.is_available
                                     ? "available"
@@ -1246,6 +1300,9 @@ if (error) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {item.deposit_amount.toFixed(2)} MDL
                             </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {categoryName(item.category_id)}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -1276,7 +1333,7 @@ if (error) {
                       </tr>
                       {editingEquipment?.id === item.id && (
                         <tr className="bg-gray-50">
-                          <td colSpan={6} className="px-6 py-4">
+                          <td colSpan={7} className="px-6 py-4">
                             <p className="text-sm font-medium text-gray-700 mb-2">
                               Фотографии (первое — главное)
                             </p>
