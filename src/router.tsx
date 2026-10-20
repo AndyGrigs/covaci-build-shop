@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import type { RouteRecord } from 'vite-react-ssg';
 import { Head } from 'vite-react-ssg';
 import { AuthProvider } from './contexts/AuthContext';
@@ -15,6 +15,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import NotFound from './pages/NotFound';
 import { supabase } from './lib/supabase';
 import { productLoader } from './lib/productLoader';
 import { catalogLoader } from './lib/catalogLoader';
@@ -105,12 +106,12 @@ export const routes: RouteRecord[] = [
           { path: '/korzina', element: <Cart /> },
           { path: '/kabinet', element: <Cabinet /> },
           { path: '/kontakt', element: <Contact /> },
+          { path: '*', element: <NotFound /> },
         ],
       },
       { path: '/vkhod', element: <Login /> },
       { path: '/registraciya', element: <Register /> },
       { path: '/admin', element: <AdminDashboard /> },
-      { path: '*', element: <Navigate to="/" replace /> },
     ],
   },
 ];
