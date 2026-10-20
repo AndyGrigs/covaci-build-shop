@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
-import { supabase, checkIsAdmin } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import type { Database } from '../types/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -59,11 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
 
       if (error) throw error;
-      setProfile(data);
 
-      // Check if user is admin
-      const isAdminUser = await checkIsAdmin(userId);
-      setIsAdmin(isAdminUser);
+      setProfile(data);
+      setIsAdmin(data?.is_admin ?? false);
     } catch (error) {
       console.error('Error loading profile:', error);
     } finally {

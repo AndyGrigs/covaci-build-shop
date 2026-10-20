@@ -32,22 +32,3 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
   supabaseAnonKey,
   { global: { fetch: retryingFetch } }
 );
-
-// Function to check if user is admin
-export const checkIsAdmin = async (userId: string): Promise<boolean> => {
-  // For now, checking based on a role column in the profiles table
-  // You would need to add an 'is_admin' column to your profiles table in Supabase
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', userId)
-    .single();
-
-  if (error) {
-    console.error('Error checking admin status:', error);
-    return false;
-  }
-
-  // If profile has is_admin field, return its value, otherwise default to false
-  return profile?.is_admin || false;
-};
