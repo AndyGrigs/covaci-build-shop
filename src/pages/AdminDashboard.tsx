@@ -1,5 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
 import { supabase } from "../lib/supabase";
+import { toast } from "sonner";
 import { toFormImages, toDbImages } from "../lib/images";
 import { useAuth } from "../contexts/AuthContext";
 import {
@@ -349,7 +350,7 @@ if (error) {
 
     if (countError) {
       console.error("Error checking rentals:", countError);
-      alert("Не удалось проверить аренды: " + countError.message);
+      toast.error("Не удалось проверить аренды: " + countError.message);
       return;
     }
 
@@ -369,7 +370,7 @@ if (error) {
 
       if (error) {
         console.error("Error archiving equipment:", error);
-        alert("Ошибка при архивации: " + error.message);
+        toast.error("Ошибка при архивации: " + error.message);
         return;
       }
 
@@ -388,13 +389,13 @@ if (error) {
     if (error) {
       // 23503 = foreign_key_violation: RLS міг приховати від нас частину оренд
       if (error.code === "23503") {
-        alert(
+        toast.error(
           "Оборудование связано с другими записями и не может быть удалено. " +
             "Используйте архивацию.",
         );
       } else {
         console.error("Error deleting equipment:", error);
-        alert("Ошибка при удалении: " + error.message);
+        toast.error("Ошибка при удалении: " + error.message);
       }
       return;
     }

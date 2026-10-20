@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Package, Calendar, Edit, Save, Settings } from 'lucide-react';
 import type { Database } from '../types/database';
@@ -92,9 +93,9 @@ export default function Cabinet() {
     try {
       await updateProfile(formData);
       setEditing(false);
-      alert('Профиль успешно обновлен!');
+      toast.success('Профиль успешно обновлен!');
     } catch (error) {
-      alert('Ошибка при обновлении профиля');
+      toast.error('Ошибка при обновлении профиля');
     }
   };
 

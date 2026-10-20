@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -29,13 +30,13 @@ export default function ImageUpload({
 
     // Валідація типу файлу
     if (!file.type.startsWith('image/')) {
-      alert('Пожалуйста, выберите изображение');
+      toast.error('Пожалуйста, выберите изображение');
       return;
     }
 
     // Валідація розміру (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Размер файла не должен превышать 5MB');
+      toast.error('Размер файла не должен превышать 5MB');
       return;
     }
 
@@ -83,10 +84,10 @@ export default function ImageUpload({
       // Повідомляємо батьківський компонент
       onImageUploaded(publicUrl);
 
-      alert('Изображение успешно загружено!');
+      toast.success('Изображение успешно загружено!');
     } catch (error: any) {
       console.error('Ошибка загрузки:', error);
-      alert(`Ошибка при загрузке изображения: ${error.message || 'Неизвестная ошибка'}`);
+      toast.error(`Ошибка при загрузке изображения: ${error.message || 'Неизвестная ошибка'}`);
       setPreview(currentImageUrl || null);
     } finally {
       setUploading(false);

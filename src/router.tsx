@@ -22,6 +22,7 @@ import { catalogLoader } from './lib/catalogLoader';
 import { equipmentLoader } from './lib/equipmentLoader';
 import { homeLoader } from './lib/homeLoader';
 import { BRAND_NAME } from './lib/brand';
+import { Toaster } from 'sonner';
 
 function Providers() {
   return (
@@ -51,6 +52,7 @@ function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster position="top-right" richColors />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, Search, Filter, X } from 'lucide-react';
 import { BRAND_NAME } from '../lib/brand';
@@ -128,7 +129,7 @@ function EquipmentView() {
 
     const days = calculateDays();
     if (days <= 0) {
-      alert('Пожалуйста, выберите действительные даты аренды');
+      toast.error('Пожалуйста, выберите действительные даты аренды');
       return;
     }
 
@@ -150,12 +151,12 @@ function EquipmentView() {
 
     if (error) {
       if (error.code === '23P01') {
-        alert('Это оборудование уже занято на выбранные даты. Пожалуйста, выберите другие даты.');
+        toast.error('Это оборудование уже занято на выбранные даты. Пожалуйста, выберите другие даты.');
       } else {
-        alert('Ошибка при отправке запроса на аренду');
+        toast.error('Ошибка при отправке запроса на аренду');
       }
     } else {
-      alert('Запрос на аренду успешно отправлен!');
+      toast.success('Запрос на аренду успешно отправлен!');
       setSelectedEquipment(null);
       setStartDate('');
       setEndDate('');

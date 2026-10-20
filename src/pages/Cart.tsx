@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 import { processCheckout } from '../lib/edgeFunctions';
 import { useAuth } from '../contexts/AuthContext';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
@@ -75,7 +76,7 @@ export default function Cart() {
     if (!user || cartItems.length === 0) return;
 
     if (!deliveryAddress.trim()) {
-      alert('Пожалуйста, введите адрес доставки');
+      toast.error('Пожалуйста, введите адрес доставки');
       return;
     }
 
@@ -92,10 +93,10 @@ export default function Cart() {
         notes,
       });
 
-      alert('Заказ успешно оформлен!');
+      toast.success('Заказ успешно оформлен!');
       onNavigate('cabinet');
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Ошибка при оформлении заказа');
+      toast.error(error instanceof Error ? error.message : 'Ошибка при оформлении заказа');
     } finally {
       setProcessing(false);
     }
