@@ -28,7 +28,7 @@ type UserRow = { id: string; full_name: string | null; phone: string | null; is_
 
 export default function AdminDashboard() {
   const onNavigate = useAppNav();
-  const { isAdmin } = useAuth();
+  const { isAdmin, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<
     "categories" | "products" | "equipment" | "orders" | "users"
   >("categories");
@@ -68,12 +68,13 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       onNavigate("home");
       return;
     }
     loadData();
-  }, [isAdmin, onNavigate]);
+  }, [authLoading, isAdmin, onNavigate]);
 
 
   const loadData = async () => {

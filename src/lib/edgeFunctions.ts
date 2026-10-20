@@ -7,13 +7,13 @@ import { supabase } from './supabase'
 export interface CheckoutItem {
   product_id: string
   quantity: number
-  unit_price: number
 }
 
 export interface CheckoutRequest {
   items: CheckoutItem[]
   delivery_address: string
   total_amount: number
+  notes?: string
 }
 
 export interface CheckoutResponse {
@@ -63,43 +63,22 @@ export async function checkInventory(
   }
 }
 
-/**
- * Безпечне оформлення замовлення через Edge Function
- * Включає валідацію на сервері, перевірку наявності та транзакційне створення
- */
 export async function processCheckout(
   request: CheckoutRequest
 ): Promise<CheckoutResponse> {
-  try {
-    // Отримати поточну сесію для auth token
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+  const { data, error } = await supabase.rpc('create_order', {
+    p_items: request.items.map(({ product_id, quantity }) => ({ product_id, quantity })),
+    p_delivery_address: request.delivery_address,
+    p_notes: request.notes?.trim() || undefined,
+    p_expected_total: request.total_amount,
+  })
 
-    if (!session) {
-      throw new Error('You must be logged in to checkout')
-    }
-
-    const { data, error } = await supabase.functions.invoke('checkout', {
-      body: request,
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-    })
-
-    if (error) {
-      throw new Error(error.message || 'Checkout failed')
-    }
-
-    if (data.error) {
-      throw new Error(data.error)
-    }
-
-    return data as CheckoutResponse
-  } catch (error) {
+  if (error) {
     console.error('Checkout error:', error)
-    throw error
+    throw new Error(error.message)
   }
+
+  return { success: true, order_id: data as string, message: 'Заказ оформлен' }
 }
 
 /**

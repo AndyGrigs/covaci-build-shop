@@ -360,6 +360,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_order: {
+        Args: {
+          p_items: Json
+          p_delivery_address: string
+          p_notes?: string
+          p_expected_total?: number
+        }
+        Returns: string
+      }
       equipment_busy_ranges: {
         Args: { p_equipment_id: string }
         Returns: { start_date: string; end_date: string }[]

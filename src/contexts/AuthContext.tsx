@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           loadProfile(session.user.id);
         } else {
           setProfile(null);
+          setIsAdmin(false);
           setLoading(false);
         }
       })();

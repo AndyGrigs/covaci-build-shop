@@ -86,13 +86,11 @@ export default function Cart() {
         items: cartItems.map((item) => ({
           product_id: item.product_id,
           quantity: item.quantity,
-          unit_price: item.products.price,
         })),
         delivery_address: deliveryAddress,
         total_amount: calculateTotal(),
+        notes,
       });
-
-      await supabase.from('cart_items').delete().eq('user_id', user.id);
 
       alert('Заказ успешно оформлен!');
       onNavigate('cabinet');

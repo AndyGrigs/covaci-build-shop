@@ -17,7 +17,7 @@ type Rental = Database['public']['Tables']['rentals']['Row'] & {
 
 export default function Cabinet() {
   const onNavigate = useAppNav();
-  const { user, profile, isAdmin, updateProfile } = useAuth();
+  const { user, profile, isAdmin, loading: authLoading, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'rentals'>('profile');
   const [orders, setOrders] = useState<Order[]>([]);
   const [rentals, setRentals] = useState<Rental[]>([]);
@@ -28,6 +28,10 @@ export default function Cabinet() {
     company_name: profile?.company_name || '',
     address: profile?.address || '',
   });
+
+  useEffect(() => {
+    if (!authLoading && !user) onNavigate('login');
+  }, [authLoading, user, onNavigate]);
 
   useEffect(() => {
     if (user) {
@@ -122,10 +126,14 @@ export default function Cabinet() {
   const getStatusColor = (status: string) =>
     STATUS_COLORS[status] ?? 'bg-gray-100 text-gray-700';
 
-  if (!user) {
-    onNavigate('login');
-    return null;
+  if (authLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
+      </div>
+    );
   }
+  if (!user) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
