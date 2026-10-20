@@ -12,7 +12,7 @@ import { useAppNav } from "../hooks/useAppNav";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
 import type { HomeLoaderData } from "../lib/homeLoader";
-import { BRAND_NAME } from "../lib/brand";
+import { BRAND_NAME, BRAND_URL, BRAND_PHONE } from "../lib/brand";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -93,6 +93,35 @@ export default function Home() {
         title={`${BRAND_NAME} — строительные материалы и аренда оборудования`}
         description={`${BRAND_NAME}: качественные строительные материалы и аренда профессионального оборудования.`}
         path="/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'LocalBusiness',
+          name: BRAND_NAME,
+          url: BRAND_URL,
+          telephone: BRAND_PHONE,
+          image: `${BRAND_URL}/shop.jpg`,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'с. Самурза',
+            addressLocality: 'Taraclia',
+            postalCode: '7419',
+            addressCountry: 'MD',
+          },
+          openingHoursSpecification: [
+            {
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+              opens: '08:00',
+              closes: '18:00',
+            },
+            {
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: ['Saturday'],
+              opens: '09:00',
+              closes: '14:00',
+            },
+          ],
+        }}
       />
 
       {/* ===== HERO СЕКЦИЯ ===== */}

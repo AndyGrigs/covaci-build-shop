@@ -180,10 +180,17 @@ if (error) {
   };
 
   const handleDeleteCategory = async (id: string) => {
+    if (!window.confirm("Удалить категорию безвозвратно?")) return;
+
     const { error } = await supabase.from("categories").delete().eq("id", id);
 
     if (error) {
-      console.error("Error deleting category:", error);
+      if (error.code === "23503") {
+        toast.error("Нельзя удалить категорию: к ней привязаны товары или оборудование.");
+      } else {
+        console.error("Error deleting category:", error);
+        toast.error("Ошибка при удалении категории: " + error.message);
+      }
     } else {
       setCategories(categories.filter((cat) => cat.id !== id));
     }
@@ -265,10 +272,13 @@ if (error) {
   };
 
   const handleDeleteProduct = async (id: string) => {
+    if (!window.confirm("Удалить товар безвозвратно?")) return;
+
     const { error } = await supabase.from("products").delete().eq("id", id);
 
     if (error) {
       console.error("Error deleting product:", error);
+      toast.error("Ошибка при удалении товара: " + error.message);
     } else {
       setProducts(products.filter((prod) => prod.id !== id));
     }

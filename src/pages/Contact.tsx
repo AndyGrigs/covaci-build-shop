@@ -1,6 +1,6 @@
 import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 import Seo from '../components/Seo';
-import { BRAND_NAME, BRAND_PHONE, BRAND_PHONE_RAW } from '../lib/brand';
+import { BRAND_NAME, BRAND_URL, BRAND_PHONE, BRAND_PHONE_RAW } from '../lib/brand';
 
 export default function Contact() {
   return (
@@ -9,6 +9,35 @@ export default function Contact() {
         title="Контакты"
         description={`Контакты ${BRAND_NAME}: адрес, телефоны и электронная почта.`}
         path="/kontakt"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'LocalBusiness',
+          name: BRAND_NAME,
+          url: BRAND_URL,
+          telephone: BRAND_PHONE,
+          image: `${BRAND_URL}/shop.jpg`,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'с. Самурза',
+            addressLocality: 'Taraclia',
+            postalCode: '7419',
+            addressCountry: 'MD',
+          },
+          openingHoursSpecification: [
+            {
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+              opens: '08:00',
+              closes: '18:00',
+            },
+            {
+              '@type': 'OpeningHoursSpecification',
+              dayOfWeek: ['Saturday'],
+              opens: '09:00',
+              closes: '14:00',
+            },
+          ],
+        }}
       />
       <h1 className="text-4xl font-bold text-gray-900 mb-2">Контакты</h1>
       <p className="text-gray-500 mb-10">Свяжитесь с нами любым удобным способом</p>

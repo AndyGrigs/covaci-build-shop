@@ -3,7 +3,7 @@ import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, Search, Filter } from 'lucide-react';
-import { BRAND_NAME } from '../lib/brand';
+import { BRAND_NAME, BRAND_URL } from '../lib/brand';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { CatalogLoaderData } from '../lib/catalogLoader';
@@ -131,6 +131,30 @@ function ProductsView() {
             : `Каталог строительных материалов ${BRAND_NAME}: цены и наличие.`
         }
         path={activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog'}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Главная',
+              item: BRAND_URL,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Каталог',
+              item: `${BRAND_URL}/catalog`,
+            },
+            ...(activeCategory ? [{
+              '@type': 'ListItem',
+              position: 3,
+              name: activeCategory.name,
+              item: `${BRAND_URL}/catalog/${activeCategory.slug}`,
+            }] : []),
+          ],
+        }}
       />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">Строительные материалы</h1>
