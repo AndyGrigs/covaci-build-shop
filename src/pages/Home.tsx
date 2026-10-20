@@ -12,6 +12,7 @@ import { useAppNav } from "../hooks/useAppNav";
 import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
 import type { HomeLoaderData } from "../lib/homeLoader";
+import { BRAND_NAME } from "../lib/brand";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -89,8 +90,8 @@ export default function Home() {
   return (
     <div>
       <Seo
-        title="DenAlex — строительные материалы и аренда оборудования"
-        description="DenAlex: качественные строительные материалы и аренда профессионального оборудования."
+        title={`${BRAND_NAME} — строительные материалы и аренда оборудования`}
+        description={`${BRAND_NAME}: качественные строительные материалы и аренда профессионального оборудования.`}
         path="/"
       />
 

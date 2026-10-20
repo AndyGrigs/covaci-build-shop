@@ -3,6 +3,7 @@ import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, Search, Filter, X } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { EquipmentLoaderData } from '../lib/equipmentLoader';
@@ -170,8 +171,8 @@ function EquipmentView() {
         title={activeCategory ? activeCategory.name : 'Аренда оборудования'}
         description={
           activeCategory
-            ? `${activeCategory.name} в аренду в DenAlex: цены за сутки и наличие.`
-            : 'Аренда профессионального оборудования и инструмента в DenAlex: цены за сутки и наличие.'
+            ? `${activeCategory.name} в аренду в ${BRAND_NAME}: цены за сутки и наличие.`
+            : `Аренда профессионального оборудования и инструмента в ${BRAND_NAME}: цены за сутки и наличие.`
         }
         path={activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki'}
       />

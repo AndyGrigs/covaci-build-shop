@@ -1,7 +1,8 @@
 import { Head } from 'vite-react-ssg';
+import { BRAND_NAME } from '../lib/brand';
 
 const SITE_URL = 'https://den-alex.com';
-const SITE_NAME = 'DenAlex';
+const SITE_NAME = BRAND_NAME;
 const DEFAULT_IMAGE = `${SITE_URL}/shop.jpg`;
 
 type SeoProps = {

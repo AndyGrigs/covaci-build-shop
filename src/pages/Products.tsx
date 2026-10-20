@@ -3,6 +3,7 @@ import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, Search, Filter } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { CatalogLoaderData } from '../lib/catalogLoader';
@@ -126,8 +127,8 @@ function ProductsView() {
         title={activeCategory ? activeCategory.name : 'Строительные материалы'}
         description={
           activeCategory
-            ? `${activeCategory.name} в DenAlex: цены и наличие.`
-            : 'Каталог строительных материалов DenAlex: цены и наличие.'
+            ? `${activeCategory.name} в ${BRAND_NAME}: цены и наличие.`
+            : `Каталог строительных материалов ${BRAND_NAME}: цены и наличие.`
         }
         path={activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog'}
       />

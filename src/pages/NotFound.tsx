@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
+import { BRAND_NAME } from '../lib/brand';
 
 export default function NotFound() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
       <Head>
-        <title>Страница не найдена | DenAlex</title>
+        <title>{`Страница не найдена | ${BRAND_NAME}`}</title>
         <meta name="robots" content="noindex" />
       </Head>
 

@@ -1,5 +1,6 @@
 import { useState, FormEvent } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { BRAND_NAME } from "../lib/brand";
 import { UserPlus, Mail, Lock, User, CheckCircle } from "lucide-react";
 import { useAppNav } from "../hooks/useAppNav";
 
@@ -84,7 +85,7 @@ export default function Register() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Создать аккаунт</h2>
           <p className="text-gray-600 mt-2">
-            Присоединяйтесь к порталу строительных материалов DenAlex
+            Присоединяйтесь к порталу строительных материалов {BRAND_NAME}
           </p>
         </div>
 

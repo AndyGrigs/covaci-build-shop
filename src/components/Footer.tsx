@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
+import { BRAND_NAME, BRAND_PHONE_RAW, BRAND_EMAIL_SUPPORT } from "../lib/brand";
 
 export default function Footer() {
   return (
@@ -9,7 +10,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Building2 className="w-8 h-8 text-brand" />
-              <span className="text-xl font-bold text-white">DenAlex</span>
+              <span className="text-xl font-bold text-white">{BRAND_NAME}</span>
             </div>
             <p className="text-sm">
               Надежный партнер в сфере качественных строительных материалов и
@@ -54,7 +55,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="w-5 h-5" />
-                <span>+37378719072</span>
+                <span>{BRAND_PHONE_RAW}</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="w-5 h-5" />
@@ -62,14 +63,14 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-2">
                 <Mail className="w-5 h-5" />
-                <span>covacialexandr@gmail.com</span>
+                <span>{BRAND_EMAIL_SUPPORT}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
-          <p>&copy; 2024 DenAlex. Все права защищены.</p>
+          <p>&copy; {new Date().getFullYear()} {BRAND_NAME}. Все права защищены.</p>
         </div>
       </div>
     </footer>

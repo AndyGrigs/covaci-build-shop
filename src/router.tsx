@@ -21,12 +21,13 @@ import { productLoader } from './lib/productLoader';
 import { catalogLoader } from './lib/catalogLoader';
 import { equipmentLoader } from './lib/equipmentLoader';
 import { homeLoader } from './lib/homeLoader';
+import { BRAND_NAME } from './lib/brand';
 
 function Providers() {
   return (
     <AuthProvider>
       <Head>
-        <title>DenAlex — строительные материалы и аренда оборудования</title>
+        <title>{`${BRAND_NAME} — строительные материалы и аренда оборудования`}</title>
       </Head>
       <Outlet />
     </AuthProvider>

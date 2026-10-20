@@ -1,12 +1,13 @@
 import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 import Seo from '../components/Seo';
+import { BRAND_NAME, BRAND_PHONE, BRAND_PHONE_RAW } from '../lib/brand';
 
 export default function Contact() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <Seo
         title="Контакты"
-        description="Контакты DenAlex: адрес, телефоны и электронная почта."
+        description={`Контакты ${BRAND_NAME}: адрес, телефоны и электронная почта.`}
         path="/kontakt"
       />
       <h1 className="text-4xl font-bold text-gray-900 mb-2">Контакты</h1>
@@ -30,8 +31,8 @@ export default function Contact() {
             </div>
             <div>
               <p className="font-semibold text-gray-800">Телефон</p>
-              <a href="tel:+37378719072" className="text-gray-500 hover:text-yellow-500 transition">
-                +373 78719072
+              <a href={`tel:${BRAND_PHONE_RAW}`} className="text-gray-500 hover:text-yellow-500 transition">
+                {BRAND_PHONE}
               </a>
             </div>
           </div>

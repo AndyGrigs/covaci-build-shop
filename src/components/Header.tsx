@@ -16,6 +16,7 @@ import {
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { BRAND_NAME, BRAND_PHONE } from "../lib/brand";
 
 const navLinks = [
   { label: "Главная", path: "/" },
@@ -113,7 +114,7 @@ export default function Header() {
             <div className="flex items-center space-x-4">
               <span className="flex items-center space-x-1">
                 <Phone className="w-3.5 h-3.5 text-brand" />
-                <span>+373 78719072</span>
+                <span>{BRAND_PHONE}</span>
               </span>
               <span className="text-gray-500">|</span>
               <span className="text-gray-300 cursor-pointer hover:text-white transition">MD</span>
@@ -129,7 +130,7 @@ export default function Header() {
               {/* Logo */}
               <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition">
                 <Building2 className="w-8 h-8 text-brand" />
-                <span className="text-xl font-bold text-gray-900">DenAlex</span>
+                <span className="text-xl font-bold text-gray-900">{BRAND_NAME}</span>
               </Link>
 
               {/* Desktop nav */}

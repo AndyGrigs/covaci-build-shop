@@ -3,6 +3,7 @@ import { useParams, useLoaderData, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight, Package } from 'lucide-react';
+import { BRAND_NAME } from '../lib/brand';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { ProductLoaderData } from '../lib/productLoader';
@@ -125,7 +126,7 @@ export default function ProductDetail() {
         title={product.name}
         description={(
           product.description?.trim() ||
-          `${product.name} в DenAlex: цена и наличие.`
+          `${product.name} в ${BRAND_NAME}: цена и наличие.`
         ).slice(0, 160)}
         path={`/tovar/${product.slug}`}
         image={images[0]}
