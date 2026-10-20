@@ -202,7 +202,7 @@ export default function Cabinet() {
             ) : (
               <button
                 onClick={handleSaveProfile}
-                className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                className="flex items-center space-x-2 px-4 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 <Save className="w-4 h-4" />
                 <span>Сохранить</span>
@@ -350,7 +350,7 @@ export default function Cabinet() {
               <p className="text-gray-600">Нет истории аренды</p>
               <button
                 onClick={() => onNavigate('equipment')}
-                className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                className="mt-4 px-6 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 Просмотр оборудования
               </button>
