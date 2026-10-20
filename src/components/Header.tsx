@@ -65,9 +65,8 @@ export default function Header() {
         loadCartCount
       )
       .on(
-        // DELETE нельзя фильтровать по user_id — просто пересчитываем
         "postgres_changes",
-        { event: "DELETE", schema: "public", table: "cart_items" },
+        { event: "DELETE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
         loadCartCount
       )
       .subscribe();
