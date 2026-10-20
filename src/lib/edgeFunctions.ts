@@ -1,9 +1,5 @@
 import { supabase } from './supabase'
 
-/**
- * Інтерфейси для Edge Functions
- */
-
 export interface CheckoutItem {
   product_id: string
   quantity: number
@@ -20,47 +16,6 @@ export interface CheckoutResponse {
   success: boolean
   order_id: string
   message: string
-}
-
-export interface InventoryCheckRequest {
-  product_id: string
-  quantity: number
-}
-
-export interface InventoryCheckResponse {
-  available: boolean
-  stock_quantity: number
-  reserved_quantity?: number
-  available_quantity?: number
-  requested_quantity: number
-  product_name: string
-  rental_days?: number
-  price_per_day?: number
-  total_price?: number
-  message: string
-  conflicting_rentals?: number
-}
-
-/**
- * Перевірка наявності товару або доступності для оренди
- */
-export async function checkInventory(
-  request: InventoryCheckRequest
-): Promise<InventoryCheckResponse> {
-  try {
-    const { data, error } = await supabase.functions.invoke('check-inventory', {
-      body: request,
-    })
-
-    if (error) {
-      throw new Error(error.message || 'Failed to check inventory')
-    }
-
-    return data as InventoryCheckResponse
-  } catch (error) {
-    console.error('Inventory check error:', error)
-    throw error
-  }
 }
 
 export async function processCheckout(
