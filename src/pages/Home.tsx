@@ -108,7 +108,7 @@ export default function Home() {
               </h1>
               <p className="text-gray-500 text-lg mb-8 max-w-md leading-relaxed">
                 Строительные материалы, спецтехника в аренду<br />
-                и професиональные услуги
+                и профессиональные услуги
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -160,7 +160,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-gray-800">Современная техника</p>
-                  <p className="text-xs text-gray-500">в оренду</p>
+                  <p className="text-xs text-gray-500">в аренду</p>
                 </div>
               </div>
 
@@ -189,6 +189,7 @@ export default function Home() {
       </section>
 
        {/* ===== СЕКЦИЯ "ПОПУЛЯРНЫЕ КАТЕГОРИИ" ===== */}
+      {(loading || categories.length > 0) && (
       <section className="py-14 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -209,7 +210,7 @@ export default function Home() {
           {/* Сетка категорий */}
           {!loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categories.map((category) => (
+              {categories.filter((c) => c.slug).map((category) => (
                 <Link
                   key={category.id}
                   to={`/catalog/${category.slug}`}
@@ -246,6 +247,7 @@ export default function Home() {
 
         </div>
       </section>
+      )}
 
        {/* ===== СЕКЦИЯ "АРЕНДА ТЕХНИКИ" ===== */}
       <section className="py-14 bg-white">
