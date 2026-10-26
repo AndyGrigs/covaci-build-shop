@@ -14,6 +14,8 @@ import Cabinet from './pages/Cabinet';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 import { supabase } from './lib/supabase';
@@ -114,6 +116,8 @@ export const routes: RouteRecord[] = [
       },
       { path: '/vkhod', element: <Login /> },
       { path: '/registraciya', element: <Register /> },
+      { path: '/vosstanovlenie-parolya', element: <ForgotPassword /> },
+      { path: '/novyy-parol', element: <ResetPassword /> },
       { path: '/admin', element: <AdminDashboard /> },
     ],
   },

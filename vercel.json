@@ -7,7 +7,7 @@
   "cleanUrls": true,
   "headers": [
     {
-      "source": "/(korzina|kabinet|vkhod|registraciya|admin)",
+      "source": "/(korzina|kabinet|vkhod|registraciya|admin|vosstanovlenie-parolya|novyy-parol)",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]

@@ -1,4 +1,5 @@
 import { useState, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import { useAppNav } from '../hooks/useAppNav';
@@ -104,6 +105,14 @@ export default function Login() {
               >
                 Зарегистрироваться
               </button>
+            </div>
+            <div>
+              <Link
+                to="/vosstanovlenie-parolya"
+                className="text-sm text-gray-600 hover:text-brand-dark transition"
+              >
+                Забыли пароль?
+              </Link>
             </div>
             <div>
               <button
