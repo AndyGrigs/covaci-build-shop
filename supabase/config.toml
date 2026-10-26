@@ -43,6 +43,9 @@ double_confirm_changes = true
 enable_confirmations = true
 
 [auth.hook.send_email]
-enabled = true
+# Set to true only for production-like local testing.
+# When enabled, emails go through Resend (real delivery) and Inbucket stays empty.
+# When disabled, Supabase routes mail to Inbucket at http://localhost:54324.
+enabled = false
 uri = "http://host.docker.internal:54321/functions/v1/send-confirmation-email"
 secrets = "env(SEND_EMAIL_HOOK_SECRET)"
