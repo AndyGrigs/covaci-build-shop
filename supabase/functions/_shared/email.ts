@@ -10,7 +10,7 @@ export type RenderEmailOpts = {
 
 export function renderEmail(opts: RenderEmailOpts): string {
   return `<!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,7 +23,7 @@ export function renderEmail(opts: RenderEmailOpts): string {
           <tr>
             <td style="background:#dc2626;padding:32px 40px;text-align:center;">
               <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;">DenAlex</h1>
-              <p style="margin:4px 0 0;color:#fca5a5;font-size:13px;">Будівельні матеріали та обладнання</p>
+              <p style="margin:4px 0 0;color:#fca5a5;font-size:13px;">Строительные материалы и оборудование</p>
             </td>
           </tr>
           <tr>

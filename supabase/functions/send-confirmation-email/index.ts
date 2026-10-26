@@ -10,6 +10,7 @@ interface EmailHookPayload {
   user: {
     id: string
     email: string
+    new_email?: string
     user_metadata: { full_name?: string }
   }
   email_data: {
@@ -69,58 +70,66 @@ function buildEmailContent(
   payload: EmailHookPayload
 ): { subject: string; html: string } {
   const { user, email_data } = payload
-  const fullName = user.user_metadata?.full_name ?? 'Користувач'
+  const fullName = user.user_metadata?.full_name ?? 'Пользователь'
   const { email_action_type, token_hash, token_hash_new, redirect_to } = email_data
 
   switch (email_action_type) {
     case 'signup':
       return {
-        subject: 'Підтвердіть вашу електронну адресу — DenAlex',
+        subject: 'Подтвердите ваш email — DenAlex',
         html: renderEmail({
-          greeting: `Вітаємо, ${fullName}!`,
-          body: 'Дякуємо за реєстрацію на DenAlex. Для завершення підтвердіть вашу електронну адресу:',
-          buttonLabel: 'Підтвердити email',
+          greeting: `Добро пожаловать, ${fullName}!`,
+          body: 'Спасибо за регистрацию в DenAlex. Для завершения подтвердите ваш адрес электронной почты:',
+          buttonLabel: 'Подтвердить email',
           url: buildActionUrl(token_hash, 'signup', redirect_to),
-          footer: 'Посилання дійсне 24 години. Якщо ви не реєструвались — просто ігноруйте цей лист.',
+          footer: 'Ссылка действительна 24 часа. Если вы не регистрировались — просто проигнорируйте это письмо.',
         }),
       }
 
     case 'recovery':
       return {
-        subject: 'Скидання пароля — DenAlex',
+        subject: 'Сброс пароля — DenAlex',
         html: renderEmail({
-          greeting: `Привіт, ${fullName}!`,
-          body: 'Ми отримали запит на скидання пароля для вашого акаунта. Натисніть кнопку нижче, щоб встановити новий пароль:',
-          buttonLabel: 'Скинути пароль',
+          greeting: `Здравствуйте, ${fullName}!`,
+          body: 'Мы получили запрос на сброс пароля для вашего аккаунта. Нажмите кнопку ниже, чтобы установить новый пароль:',
+          buttonLabel: 'Сбросить пароль',
           url: buildActionUrl(token_hash, 'recovery', redirect_to),
-          footer: 'Посилання дійсне 1 годину. Якщо ви не запитували скидання — просто ігноруйте цей лист.',
+          footer: 'Ссылка действительна 1 час. Если вы не запрашивали сброс — просто проигнорируйте это письмо.',
         }),
       }
 
     case 'invite':
       return {
-        subject: 'Запрошення до DenAlex',
+        subject: 'Приглашение в DenAlex',
         html: renderEmail({
-          greeting: 'Вас запросили до DenAlex!',
-          body: 'Натисніть кнопку нижче, щоб прийняти запрошення та створити акаунт:',
-          buttonLabel: 'Прийняти запрошення',
+          greeting: 'Вас пригласили в DenAlex!',
+          body: 'Нажмите кнопку ниже, чтобы принять приглашение и создать аккаунт:',
+          buttonLabel: 'Принять приглашение',
           url: buildActionUrl(token_hash, 'invite', redirect_to),
-          footer: 'Якщо ви не очікували цього запрошення — просто ігноруйте цей лист.',
+          footer: 'Если вы не ожидали этого приглашения — просто проигнорируйте это письмо.',
         }),
       }
 
-    case 'email_change':
-      // token_hash_new — для підтвердження нової адреси, token_hash — для старої
+    case 'email_change': {
+      // With double_confirm_changes = true GoTrue calls this hook twice.
+      // When sending to the OLD address: user.email = old, user.new_email = pending new → use token_hash.
+      // When sending to the NEW address: user.email = new, user.new_email absent/same   → use token_hash_new.
+      const sendingToOld = !!user.new_email && user.email !== user.new_email
+      const tokenToUse = sendingToOld ? token_hash : (token_hash_new ?? token_hash)
+      const body = sendingToOld
+        ? 'Вы запросили смену электронной почты. Подтвердите это действие с текущего адреса:'
+        : 'Подтвердите новый адрес электронной почты, нажав кнопку ниже:'
       return {
-        subject: 'Підтвердження зміни email — DenAlex',
+        subject: 'Подтверждение смены email — DenAlex',
         html: renderEmail({
-          greeting: `Привіт, ${fullName}!`,
-          body: 'Для підтвердження зміни вашої електронної адреси натисніть кнопку нижче:',
-          buttonLabel: 'Підтвердити нову адресу',
-          url: buildActionUrl(token_hash_new ?? token_hash, 'email_change', redirect_to),
-          footer: 'Якщо ви не змінювали email — негайно зверніться до підтримки.',
+          greeting: `Здравствуйте, ${fullName}!`,
+          body,
+          buttonLabel: 'Подтвердить адрес',
+          url: buildActionUrl(tokenToUse, 'email_change', redirect_to),
+          footer: 'Если вы не меняли email — немедленно обратитесь в поддержку.',
         }),
       }
+    }
   }
 }
 

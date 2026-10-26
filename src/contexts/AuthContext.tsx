@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { BRAND_URL } from '../lib/brand';
 import type { Database } from '../types/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -83,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           data: { full_name: fullName },
-          emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : '',
+          emailRedirectTo: BRAND_URL,
         },
       });
 
