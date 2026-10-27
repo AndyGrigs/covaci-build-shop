@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+﻿import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { renderEmail } from '../_shared/email.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? ''
@@ -31,8 +31,7 @@ Deno.serve(async (req) => {
       .from('orders')
       .select(`
         id, user_id, total_amount, delivery_address, notes,
-        order_items ( quantity, unit_price, subtotal, products ( name ) ),
-        profiles ( full_name )
+        order_items ( quantity, unit_price, subtotal, products ( name ) )
       `)
       .eq('id', id)
       .single()
@@ -43,18 +42,19 @@ Deno.serve(async (req) => {
 
     const { data: { user } } = await db.auth.admin.getUserById(order.user_id)
     to = user!.email!
-    const fullName = (order.profiles as { full_name: string } | null)?.full_name ?? ‘Клиент’
+    const { data: prof } = await db.from('profiles').select('full_name').eq('id', order.user_id).maybeSingle()
+    const fullName = prof?.full_name || 'Клиент'
 
     const rows = (order.order_items as Array<{
       quantity: number; unit_price: number; subtotal: number
       products: { name: string } | null
     }>).map((item) => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${item.products?.name ?? ‘—‘}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${item.products?.name ?? '—'}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;text-align:center;">${item.quantity}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;text-align:right;">${Number(item.unit_price).toFixed(2)} lei</td>
         <td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;text-align:right;">${Number(item.subtotal).toFixed(2)} lei</td>
-      </tr>`).join(‘’)
+      </tr>`).join('')
 
     const itemsHtml = `
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;border-collapse:collapse;font-size:14px;">
@@ -75,16 +75,16 @@ Deno.serve(async (req) => {
         </tfoot>
       </table>
       <p style="margin:4px 0 0;color:#374151;font-size:14px;"><strong>Адрес доставки:</strong> ${order.delivery_address}</p>
-      ${order.notes ? `<p style="margin:4px 0 8px;color:#374151;font-size:14px;"><strong>Примечание:</strong> ${order.notes}</p>` : ‘’}`
+      ${order.notes ? `<p style="margin:4px 0 8px;color:#374151;font-size:14px;"><strong>Примечание:</strong> ${order.notes}</p>` : ''}`
 
     subject = `Заказ #${String(order.id).slice(0, 8).toUpperCase()} принят — DenAlex`
     html = renderEmail({
       greeting: `Спасибо за заказ, ${fullName}!`,
-      body: ‘Ваш заказ успешно оформлен. Детали:’,
+      body: 'Ваш заказ успешно оформлен. Детали:',
       itemsHtml,
-      buttonLabel: ‘Перейти в кабинет’,
+      buttonLabel: 'Перейти в кабинет',
       url: `${SITE_URL}/kabinet`,
-      footer: ‘Наш менеджер свяжется с вами в ближайшее время для подтверждения доставки.’,
+      footer: 'Наш менеджер свяжется с вами в ближайшее время для подтверждения доставки.',
     })
 
   } else if (type === 'rental') {
@@ -92,8 +92,7 @@ Deno.serve(async (req) => {
       .from('rentals')
       .select(`
         id, user_id, equipment_name, start_date, end_date, total_days,
-        daily_rate, deposit_paid, total_amount, notes,
-        profiles ( full_name )
+        daily_rate, deposit_paid, total_amount, notes
       `)
       .eq('id', id)
       .single()
@@ -104,16 +103,17 @@ Deno.serve(async (req) => {
 
     const { data: { user } } = await db.auth.admin.getUserById(rental.user_id)
     to = user!.email!
-    const fullName = (rental.profiles as { full_name: string } | null)?.full_name ?? ‘Клиент’
+    const { data: prof } = await db.from('profiles').select('full_name').eq('id', rental.user_id).maybeSingle()
+    const fullName = prof?.full_name || 'Клиент'
 
     const depositRow = Number(rental.deposit_paid) > 0
       ? `<tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Залог</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${Number(rental.deposit_paid).toFixed(2)} lei</td></tr>`
-      : ‘’
+      : ''
 
     const itemsHtml = `
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;border-collapse:collapse;font-size:14px;">
         <tbody>
-          <tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Оборудование</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;font-weight:600;">${rental.equipment_name ?? ‘—‘}</td></tr>
+          <tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Оборудование</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;font-weight:600;">${rental.equipment_name ?? '—'}</td></tr>
           <tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Дата начала</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${rental.start_date}</td></tr>
           <tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Дата окончания</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${rental.end_date}</td></tr>
           <tr><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;color:#6b7280;">Количество дней</td><td style="padding:8px 12px;border-bottom:1px solid #f3f4f6;">${rental.total_days}</td></tr>
@@ -122,16 +122,16 @@ Deno.serve(async (req) => {
           <tr><td style="padding:10px 12px;font-weight:600;color:#111827;">Итого</td><td style="padding:10px 12px;font-weight:700;color:#dc2626;">${Number(rental.total_amount).toFixed(2)} lei</td></tr>
         </tbody>
       </table>
-      ${rental.notes ? `<p style="margin:4px 0 8px;color:#374151;font-size:14px;"><strong>Примечание:</strong> ${rental.notes}</p>` : ‘’}`
+      ${rental.notes ? `<p style="margin:4px 0 8px;color:#374151;font-size:14px;"><strong>Примечание:</strong> ${rental.notes}</p>` : ''}`
 
-    subject = ‘Аренда подтверждена — DenAlex’
+    subject = 'Аренда подтверждена — DenAlex'
     html = renderEmail({
       greeting: `Спасибо, ${fullName}!`,
-      body: ‘Ваша заявка на аренду оборудования принята. Детали:’,
+      body: 'Ваша заявка на аренду оборудования принята. Детали:',
       itemsHtml,
-      buttonLabel: ‘Перейти в кабинет’,
+      buttonLabel: 'Перейти в кабинет',
       url: `${SITE_URL}/kabinet`,
-      footer: ‘Наш менеджер свяжется с вами для согласования деталей передачи оборудования.’,
+      footer: 'Наш менеджер свяжется с вами для согласования деталей передачи оборудования.',
     })
 
   } else {

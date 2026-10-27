@@ -1411,8 +1411,8 @@ if (error) {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {order.id.slice(0, 8)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {order.user_id.slice(0, 8)}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {users.find((u) => u.id === order.user_id)?.full_name ?? order.user_id.slice(0, 8)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(order.created_at ?? '').toLocaleDateString()}
