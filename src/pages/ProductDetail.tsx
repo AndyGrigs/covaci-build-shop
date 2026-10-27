@@ -10,12 +10,14 @@ import type { ProductLoaderData } from '../lib/productLoader';
 import Seo from '../components/Seo';
 import NotFound from './NotFound';
 import { useTranslation } from 'react-i18next';
+import { useLangPath } from '../hooks/useLang';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function ProductDetail() {
   const { t } = useTranslation();
+  const lp = useLangPath();
   const { slug: productSlug } = useParams<{ slug: string }>();
   const onNavigate = useAppNav();
   const { user } = useAuth();
@@ -123,7 +125,7 @@ export default function ProductDetail() {
           product.description?.trim() ||
           t('product.seoDesc', { name: product.name, brand: BRAND_NAME })
         ).slice(0, 160)}
-        path={`/tovar/${product.slug}`}
+        path={lp(`/tovar/${product.slug}`)}
         image={images[0]}
         type="product"
         jsonLd={{
@@ -148,13 +150,13 @@ export default function ProductDetail() {
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-        <Link to="/" className="hover:text-gray-700 transition">{t('product.home')}</Link>
+        <Link to={lp('/')} className="hover:text-gray-700 transition">{t('product.home')}</Link>
         <span>/</span>
-        <Link to="/catalog" className="hover:text-gray-700 transition">{t('product.catalog')}</Link>
+        <Link to={lp('/catalog')} className="hover:text-gray-700 transition">{t('product.catalog')}</Link>
         {category && (
           <>
             <span>/</span>
-            <Link to={`/catalog/${category.slug}`} className="hover:text-gray-700 transition">
+            <Link to={lp(`/catalog/${category.slug}`)} className="hover:text-gray-700 transition">
               {category.name}
             </Link>
           </>
@@ -165,7 +167,7 @@ export default function ProductDetail() {
 
       {/* Back button */}
       <Link
-        to="/catalog"
+        to={lp('/catalog')}
         className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition mb-8 group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />

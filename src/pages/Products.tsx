@@ -9,6 +9,7 @@ import { useAppNav } from '../hooks/useAppNav';
 import type { CatalogLoaderData } from '../lib/catalogLoader';
 import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
+import { useLangPath } from '../hooks/useLang';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -20,6 +21,7 @@ export default function Products() {
 
 function ProductsView() {
   const { t } = useTranslation();
+  const lp = useLangPath();
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
@@ -129,7 +131,7 @@ function ProductsView() {
             ? t('products.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
             : t('products.seoDesc', { brand: BRAND_NAME })
         }
-        path={activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog'}
+        path={lp(activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog')}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
@@ -190,7 +192,7 @@ function ProductsView() {
               </label>
               <div className="space-y-2">
                 <Link
-                  to="/catalog"
+                  to={lp('/catalog')}
                   className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === ''
                       ? 'bg-yellow-50 text-yellow-600 font-medium'
@@ -202,7 +204,7 @@ function ProductsView() {
                 {categories.map((category) => (
                   <Link
                     key={category.id}
-                    to={`/catalog/${category.slug}`}
+                    to={lp(`/catalog/${category.slug}`)}
                     className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                       selectedCategory === category.id
                         ? 'bg-yellow-50 text-yellow-600 font-medium'
@@ -249,7 +251,7 @@ function ProductsView() {
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      <Link to={`/tovar/${product.slug}`} className="after:absolute after:inset-0">
+                      <Link to={lp(`/tovar/${product.slug}`)} className="after:absolute after:inset-0">
                         {product.name}
                       </Link>
                     </h3>

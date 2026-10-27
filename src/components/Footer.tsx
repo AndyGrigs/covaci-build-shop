@@ -2,9 +2,11 @@ import { Link } from "react-router-dom";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import { BRAND_NAME, BRAND_PHONE_RAW, BRAND_EMAIL_SUPPORT } from "../lib/brand";
 import { useTranslation } from "react-i18next";
+import { useLangPath } from "../hooks/useLang";
 
 export default function Footer() {
   const { t } = useTranslation();
+  const lp = useLangPath();
 
   return (
     <footer className="bg-gray-900 text-gray-300 mt-auto">
@@ -23,13 +25,13 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li><span className="text-gray-400">{t('footer.about')}</span></li>
               <li>
-                <Link to="/catalog" className="hover:text-white transition">{t('footer.products')}</Link>
+                <Link to={lp('/catalog')} className="hover:text-white transition">{t('footer.products')}</Link>
               </li>
               <li>
-                <Link to="/arenda-tehniki" className="hover:text-white transition">{t('footer.equipment')}</Link>
+                <Link to={lp('/arenda-tehniki')} className="hover:text-white transition">{t('footer.equipment')}</Link>
               </li>
               <li>
-                <Link to="/kontakt" className="hover:text-white transition">{t('footer.contacts')}</Link>
+                <Link to={lp('/kontakt')} className="hover:text-white transition">{t('footer.contacts')}</Link>
               </li>
             </ul>
           </div>

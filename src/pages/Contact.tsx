@@ -2,16 +2,18 @@ import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 import Seo from '../components/Seo';
 import { BRAND_NAME, BRAND_URL, BRAND_PHONE, BRAND_PHONE_RAW } from '../lib/brand';
 import { useTranslation } from 'react-i18next';
+import { useLangPath } from '../hooks/useLang';
 
 export default function Contact() {
   const { t } = useTranslation();
+  const lp = useLangPath();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <Seo
         title={t('seo.contacts.title')}
         description={t('seo.contacts.desc', { brand: BRAND_NAME })}
-        path="/kontakt"
+        path={lp('/kontakt')}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'LocalBusiness',

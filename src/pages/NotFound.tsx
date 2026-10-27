@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
 import { BRAND_NAME } from '../lib/brand';
 import { useTranslation } from 'react-i18next';
+import { useLangPath } from '../hooks/useLang';
 
 export default function NotFound() {
   const { t } = useTranslation();
+  const lp = useLangPath();
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
@@ -19,19 +21,19 @@ export default function NotFound() {
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
-          to="/"
+          to={lp('/')}
           className="px-6 py-3 bg-brand text-gray-900 rounded-lg font-medium hover:bg-brand-dark transition"
         >
           {t('notFound.home')}
         </Link>
         <Link
-          to="/catalog"
+          to={lp('/catalog')}
           className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition"
         >
           {t('notFound.catalog')}
         </Link>
         <Link
-          to="/arenda-tehniki"
+          to={lp('/arenda-tehniki')}
           className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition"
         >
           {t('notFound.equipment')}

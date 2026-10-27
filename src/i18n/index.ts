@@ -1,39 +1,26 @@
-import i18n from 'i18next';
+import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import ru from './ru';
 import ro from './ro';
 
-const STORAGE_KEY = 'lang';
+const resources = {
+  ru: { translation: ru },
+  ro: { translation: ro },
+};
 
-function getInitialLanguage(): string {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'ro' || stored === 'ru') return stored;
-  }
-  return 'ru';
-}
+const baseConfig = {
+  resources,
+  fallbackLng: 'ru' as const,
+  interpolation: { escapeValue: false },
+  initImmediate: false, // synchronous init (resources are pre-loaded)
+};
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      ru: { translation: ru },
-      ro: { translation: ro },
-    },
-    lng: getInitialLanguage(),
-    fallbackLng: 'ru',
-    interpolation: { escapeValue: false },
-  });
+// Russian instance — also the global default (used for auth pages)
+i18next.use(initReactI18next).init({ ...baseConfig, lng: 'ru' });
 
-export function setLanguage(lang: 'ru' | 'ro') {
-  i18n.changeLanguage(lang);
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, lang);
-  }
-}
+// Romanian instance — independent, wrapped in I18nextProvider in LangLayout
+const i18nRo = i18next.createInstance();
+i18nRo.use(initReactI18next).init({ ...baseConfig, lng: 'ro' });
 
-export function getLanguage(): 'ru' | 'ro' {
-  return (i18n.language as 'ru' | 'ro') || 'ru';
-}
-
-export default i18n;
+export { i18nRo };
+export default i18next; // Russian / global

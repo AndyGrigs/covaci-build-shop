@@ -14,6 +14,7 @@ import type { Database } from "../types/database";
 import type { HomeLoaderData } from "../lib/homeLoader";
 import { BRAND_NAME, BRAND_URL, BRAND_PHONE } from "../lib/brand";
 import { useTranslation } from "react-i18next";
+import { useLangPath } from "../hooks/useLang";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -39,6 +40,7 @@ const EQUIPMENT_IMAGES: Record<string, string> = {
 
 export default function Home() {
   const { t } = useTranslation();
+  const lp = useLangPath();
   const onNavigate = useAppNav();
   const initial = useLoaderData() as HomeLoaderData | undefined;
   const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
@@ -89,7 +91,7 @@ export default function Home() {
       <Seo
         title={t('seo.home.title', { brand: BRAND_NAME })}
         description={t('seo.home.desc', { brand: BRAND_NAME })}
-        path="/"
+        path={lp('/')}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'LocalBusiness',
@@ -139,14 +141,14 @@ export default function Home() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
-                  to="/catalog"
+                  to={lp('/catalog')}
                   className="inline-flex items-center space-x-2 px-7 py-3.5 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition"
                 >
                   <span>{t('home.hero.catalogBtn')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
-                  to="/arenda-tehniki"
+                  to={lp('/arenda-tehniki')}
                   className="inline-flex items-center space-x-2 px-7 py-3.5 border-2 border-gray-300 text-gray-700 font-semibold rounded hover:border-gray-400 transition"
                 >
                   <span>{t('home.hero.equipmentBtn')}</span>
@@ -235,7 +237,7 @@ export default function Home() {
                 {categories.filter((c) => c.slug).map((category) => (
                   <Link
                     key={category.id}
-                    to={`/catalog/${category.slug}`}
+                    to={lp(`/catalog/${category.slug}`)}
                     className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
                   >
                     <div className="h-36 overflow-hidden bg-gray-50">
@@ -291,7 +293,7 @@ export default function Home() {
               </p>
 
               <Link
-                to="/arenda-tehniki"
+                to={lp('/arenda-tehniki')}
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition w-fit"
               >
                 <span>{t('home.equip.btn')}</span>

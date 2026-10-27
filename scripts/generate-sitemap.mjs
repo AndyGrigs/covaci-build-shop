@@ -3,7 +3,7 @@ import { join, relative, sep } from 'node:path';
 
 const DIST = 'dist';
 // Приватні сторінки закриті через X-Robots-Tag, у sitemap їх не буде
-const PRIVATE = new Set(['/korzina', '/kabinet', '/vkhod', '/registraciya', '/admin']);
+const PRIVATE = new Set(['/korzina', '/kabinet', '/ro/korzina', '/ro/kabinet', '/vkhod', '/registraciya', '/admin']);
 
 function htmlFiles(dir) {
   return readdirSync(dir).flatMap((name) => {

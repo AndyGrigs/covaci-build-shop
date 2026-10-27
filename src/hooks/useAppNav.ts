@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { toRoPath } from './useLang';
 
 const PAGE_TO_PATH: Record<string, string> = {
   home: '/',
@@ -15,16 +16,27 @@ const PAGE_TO_PATH: Record<string, string> = {
 
 export function useAppNav() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isRo = pathname.startsWith('/ro');
+
   return useCallback((page: string) => {
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    let path: string;
     if (page.startsWith('product-detail:')) {
-      navigate('/tovar/' + page.split(':')[1]);
+      path = '/tovar/' + page.split(':')[1];
     } else if (page.startsWith('products:')) {
-      navigate('/catalog/' + page.split(':')[1]);
+      path = '/catalog/' + page.split(':')[1];
     } else {
-      navigate(PAGE_TO_PATH[page] ?? '/');
+      path = PAGE_TO_PATH[page] ?? '/';
     }
-  }, [navigate]);
+
+    // Auth pages stay without /ro prefix (they're language-agnostic)
+    const isAuthPage = path.startsWith('/vkhod') || path.startsWith('/registraciya') ||
+      path.startsWith('/vosstanovlenie') || path.startsWith('/admin');
+
+    navigate(isRo && !isAuthPage ? toRoPath(path) : path);
+  }, [navigate, isRo]);
 }

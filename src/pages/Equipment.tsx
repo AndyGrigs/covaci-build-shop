@@ -10,6 +10,7 @@ import { useAppNav } from '../hooks/useAppNav';
 import type { EquipmentLoaderData } from '../lib/equipmentLoader';
 import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
+import { useLangPath } from '../hooks/useLang';
 
 type Equipment = Database['public']['Tables']['equipment']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -21,6 +22,7 @@ export default function EquipmentPage() {
 
 function EquipmentView() {
   const { t } = useTranslation();
+  const lp = useLangPath();
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
@@ -176,7 +178,7 @@ function EquipmentView() {
             ? t('equipment.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
             : t('equipment.seoDesc', { brand: BRAND_NAME })
         }
-        path={activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki'}
+        path={lp(activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki')}
       />
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('equipment.title')}</h1>
@@ -213,7 +215,7 @@ function EquipmentView() {
               </label>
               <div className="space-y-2">
                 <Link
-                  to="/arenda-tehniki"
+                  to={lp('/arenda-tehniki')}
                   className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                     selectedCategory === ''
                       ? 'bg-green-50 text-green-600 font-medium'
@@ -225,7 +227,7 @@ function EquipmentView() {
                 {categories.map((category) => (
                   <Link
                     key={category.id}
-                    to={`/arenda-tehniki/${category.slug}`}
+                    to={lp(`/arenda-tehniki/${category.slug}`)}
                     className={`block w-full text-left px-3 py-2 rounded-lg transition ${
                       selectedCategory === category.id
                         ? 'bg-green-50 text-green-600 font-medium'

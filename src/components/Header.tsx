@@ -18,66 +18,49 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { BRAND_NAME, BRAND_PHONE } from "../lib/brand";
 import { useTranslation } from "react-i18next";
-import { setLanguage, getLanguage } from "../i18n";
+import { useLang, toRoPath, toRuPath } from "../hooks/useLang";
 
 export default function Header() {
   const { t } = useTranslation();
+  const lang = useLang();
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [lang, setLang] = useState<'ru' | 'ro'>(getLanguage());
 
   const navLinks = [
-    { label: t('nav.home'), path: "/" },
-    { label: t('nav.catalog'), path: "/catalog", icon: <ChevronDown className="w-4 h-4" /> },
-    { label: t('nav.equipment'), path: "/arenda-tehniki" },
-    { label: t('nav.services'), path: "" },
-    { label: t('nav.about'), path: "" },
-    { label: t('nav.contacts'), path: "/kontakt" },
+    { label: t('nav.home'), path: lang === 'ro' ? '/ro' : '/' },
+    { label: t('nav.catalog'), path: lang === 'ro' ? '/ro/catalog' : '/catalog', icon: <ChevronDown className="w-4 h-4" /> },
+    { label: t('nav.equipment'), path: lang === 'ro' ? '/ro/arenda-tehniki' : '/arenda-tehniki' },
+    { label: t('nav.services'), path: '' },
+    { label: t('nav.about'), path: '' },
+    { label: t('nav.contacts'), path: lang === 'ro' ? '/ro/kontakt' : '/kontakt' },
   ];
 
-  const handleLangSwitch = (l: 'ru' | 'ro') => {
-    setLanguage(l);
-    setLang(l);
+  const switchLang = (target: 'ru' | 'ro') => {
+    if (target === lang) return;
+    const currentPath = location.pathname;
+    const newPath = target === 'ro' ? toRoPath(currentPath) : toRuPath(currentPath);
+    navigate(newPath);
   };
 
   useEffect(() => {
-    if (!user) {
-      setCartCount(0);
-      return;
-    }
+    if (!user) { setCartCount(0); return; }
 
     const loadCartCount = async () => {
       const { data } = await supabase
-        .from("cart_items")
-        .select("quantity")
-        .eq("user_id", user.id);
-      if (data) {
-        setCartCount(data.reduce((sum, item) => sum + item.quantity, 0));
-      }
+        .from("cart_items").select("quantity").eq("user_id", user.id);
+      if (data) setCartCount(data.reduce((s, i) => s + i.quantity, 0));
     };
 
     loadCartCount();
 
     const channel = supabase
-      .channel(`header-cart-count-${user.id}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
-        loadCartCount
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
-        loadCartCount
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` },
-        loadCartCount
-      )
+      .channel(`header-cart-${user.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` }, loadCartCount)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` }, loadCartCount)
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "cart_items", filter: `user_id=eq.${user.id}` }, loadCartCount)
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
@@ -89,19 +72,18 @@ export default function Header() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Close menu on route change
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
+  const handleSignOut = async () => { await signOut(); navigate("/"); };
 
   const isActive = (path: string) => {
     if (!path) return false;
-    if (path === "/") return location.pathname === "/";
+    if (path === '/' || path === '/ro') return location.pathname === path;
     return location.pathname.startsWith(path);
   };
+
+  const cartTarget = user ? (lang === 'ro' ? '/ro/korzina' : '/korzina') : '/vkhod';
+  const cabinetTarget = lang === 'ro' ? '/ro/kabinet' : '/kabinet';
 
   return (
     <>
@@ -125,10 +107,10 @@ export default function Header() {
                 <span>{BRAND_PHONE}</span>
               </span>
               <span className="text-gray-500">|</span>
-              {/* Language switcher */}
+              {/* Language switcher — navigates to the /ro or / variant of the current page */}
               <div className="flex items-center space-x-1">
                 <button
-                  onClick={() => handleLangSwitch('ru')}
+                  onClick={() => switchLang('ru')}
                   className={`text-xs font-semibold px-1.5 py-0.5 rounded transition ${
                     lang === 'ru' ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white'
                   }`}
@@ -137,7 +119,7 @@ export default function Header() {
                 </button>
                 <span className="text-gray-600">|</span>
                 <button
-                  onClick={() => handleLangSwitch('ro')}
+                  onClick={() => switchLang('ro')}
                   className={`text-xs font-semibold px-1.5 py-0.5 rounded transition ${
                     lang === 'ro' ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white'
                   }`}
@@ -154,13 +136,11 @@ export default function Header() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
 
-              {/* Logo */}
-              <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition">
+              <Link to={lang === 'ro' ? '/ro' : '/'} className="flex items-center space-x-2 hover:opacity-80 transition">
                 <Building2 className="w-8 h-8 text-brand" />
                 <span className="text-xl font-bold text-gray-900">{BRAND_NAME}</span>
               </Link>
 
-              {/* Desktop nav */}
               <nav className="hidden md:flex items-center space-x-1">
                 {navLinks.map(({ label, path, icon }) => {
                   const classes = `px-4 py-2 font-medium transition relative flex items-center space-x-1 ${
@@ -176,32 +156,22 @@ export default function Header() {
                     </>
                   );
                   return path ? (
-                    <Link
-                      key={label}
-                      to={path}
-                      className={classes}
-                      aria-current={isActive(path) ? "page" : undefined}
-                    >
+                    <Link key={label} to={path} className={classes} aria-current={isActive(path) ? "page" : undefined}>
                       {content}
                     </Link>
                   ) : (
-                    <span key={label} className={`${classes} cursor-default`}>
-                      {content}
-                    </span>
+                    <span key={label} className={`${classes} cursor-default`}>{content}</span>
                   );
                 })}
               </nav>
 
-              {/* Right actions */}
               <div className="flex items-center space-x-1">
-                {/* Favourites — desktop only */}
                 <button className="hidden md:block p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95">
                   <Heart className="w-5 h-5" />
                 </button>
 
-                {/* Cart */}
                 <button
-                  onClick={() => navigate(user ? "/korzina" : "/vkhod")}
+                  onClick={() => navigate(cartTarget)}
                   className="relative p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
                 >
                   <ShoppingCart className="w-5 h-5" />
@@ -212,7 +182,6 @@ export default function Header() {
                   )}
                 </button>
 
-                {/* Desktop user actions */}
                 {user ? (
                   <div className="hidden md:flex items-center space-x-1">
                     {isAdmin && (
@@ -225,7 +194,7 @@ export default function Header() {
                       </button>
                     )}
                     <button
-                      onClick={() => navigate("/kabinet")}
+                      onClick={() => navigate(cabinetTarget)}
                       className="p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
                       title={profile?.full_name || t('header.cabinet')}
                     >
@@ -248,9 +217,8 @@ export default function Header() {
                   </button>
                 )}
 
-                {/* Burger button */}
                 <button
-                  onClick={() => setMenuOpen((o) => !o)}
+                  onClick={() => setMenuOpen(o => !o)}
                   className="md:hidden p-2 text-gray-600 hover:text-brand-dark transition active:scale-95"
                   aria-label={t('header.menu')}
                 >
@@ -261,37 +229,28 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile menu panel */}
-        <div
-          className={`md:hidden bg-white border-b border-gray-200 shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
-            menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
+        {/* Mobile menu */}
+        <div className={`md:hidden bg-white border-b border-gray-200 shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${
+          menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        }`}>
           <nav className="px-4 pt-2 pb-4 space-y-1">
             {navLinks.map(({ label, path }) => {
               const classes = `block w-full text-left px-4 py-3 rounded-lg font-medium transition ${
                 isActive(path) ? "bg-brand/10 text-brand-dark" : "text-gray-700 hover:bg-gray-100"
               }`;
               return path ? (
-                <Link
-                  key={label}
-                  to={path}
-                  className={classes}
-                  aria-current={isActive(path) ? "page" : undefined}
-                >
+                <Link key={label} to={path} className={classes} aria-current={isActive(path) ? "page" : undefined}>
                   {label}
                 </Link>
               ) : (
-                <span key={label} className={`${classes} cursor-default`}>
-                  {label}
-                </span>
+                <span key={label} className={`${classes} cursor-default`}>{label}</span>
               );
             })}
 
             {/* Mobile language switcher */}
             <div className="flex items-center space-x-2 px-4 py-3">
               <button
-                onClick={() => handleLangSwitch('ru')}
+                onClick={() => switchLang('ru')}
                 className={`text-sm font-semibold px-2 py-1 rounded transition ${
                   lang === 'ru' ? 'bg-gray-200 text-gray-900' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -299,7 +258,7 @@ export default function Header() {
                 RU
               </button>
               <button
-                onClick={() => handleLangSwitch('ro')}
+                onClick={() => switchLang('ro')}
                 className={`text-sm font-semibold px-2 py-1 rounded transition ${
                   lang === 'ro' ? 'bg-gray-200 text-gray-900' : 'text-gray-500 hover:text-gray-700'
                 }`}
@@ -316,7 +275,7 @@ export default function Header() {
                   <p className="px-4 py-2 text-sm text-gray-500 font-medium">{profile.full_name}</p>
                 )}
                 <button
-                  onClick={() => navigate("/kabinet")}
+                  onClick={() => navigate(cabinetTarget)}
                   className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                 >
                   <User className="w-5 h-5" />
@@ -351,12 +310,8 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Backdrop */}
       {menuOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/20 md:hidden"
-          onClick={() => setMenuOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-black/20 md:hidden" onClick={() => setMenuOpen(false)} />
       )}
     </>
   );
