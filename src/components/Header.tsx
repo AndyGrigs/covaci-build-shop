@@ -210,7 +210,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => navigate("/vkhod")}
+                    onClick={() => navigate(lang === 'ro' ? '/vkhod?lang=ro' : '/vkhod')}
                     className="hidden md:block px-5 py-2 bg-brand text-gray-900 rounded font-semibold hover:bg-brand-dark transition hover:scale-105 active:scale-95"
                   >
                     {t('header.login')}
@@ -300,7 +300,7 @@ export default function Header() {
               </div>
             ) : (
               <button
-                onClick={() => navigate("/vkhod")}
+                onClick={() => navigate(lang === 'ro' ? '/vkhod?lang=ro' : '/vkhod')}
                 className="w-full py-3 bg-brand text-gray-900 rounded-lg font-semibold hover:bg-brand-dark transition active:scale-95"
               >
                 {t('header.login')}

@@ -1,4 +1,5 @@
 import { useState, FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { BRAND_NAME } from "../lib/brand";
 import { UserPlus, Mail, Lock, User, CheckCircle } from "lucide-react";
@@ -7,6 +8,8 @@ import { useTranslation } from "react-i18next";
 
 export default function Register() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const locale = searchParams.get('lang') === 'ro' ? 'ro' : 'ru';
   const nav = useAppNav();
   const onSwitchToLogin = () => nav('login');
   const onNavigate = nav;
@@ -35,7 +38,7 @@ export default function Register() {
 
     setLoading(true);
 
-    const { error: signUpError } = await signUp(email, password, fullName);
+    const { error: signUpError } = await signUp(email, password, fullName, locale);
 
     if (signUpError) {
       setError(signUpError.message);

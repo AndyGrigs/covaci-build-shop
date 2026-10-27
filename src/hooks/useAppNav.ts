@@ -33,10 +33,10 @@ export function useAppNav() {
       path = PAGE_TO_PATH[page] ?? '/';
     }
 
-    // Auth pages stay without /ro prefix (they're language-agnostic)
     const isAuthPage = path.startsWith('/vkhod') || path.startsWith('/registraciya') ||
       path.startsWith('/vosstanovlenie') || path.startsWith('/admin');
 
-    navigate(isRo && !isAuthPage ? toRoPath(path) : path);
+    // Auth pages stay at their fixed paths but carry ?lang=ro so the form knows the user's language.
+    navigate(isRo && isAuthPage ? path + '?lang=ro' : isRo ? toRoPath(path) : path);
   }, [navigate, isRo]);
 }

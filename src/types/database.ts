@@ -271,6 +271,7 @@ export type Database = {
           full_name: string
           id: string
           is_admin: boolean | null
+          locale: string
           phone: string | null
           updated_at: string | null
         }
@@ -281,6 +282,7 @@ export type Database = {
           full_name: string
           id: string
           is_admin?: boolean | null
+          locale?: string
           phone?: string | null
           updated_at?: string | null
         }
@@ -291,6 +293,7 @@ export type Database = {
           full_name?: string
           id?: string
           is_admin?: boolean | null
+          locale?: string
           phone?: string | null
           updated_at?: string | null
         }

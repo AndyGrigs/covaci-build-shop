@@ -1,4 +1,7 @@
+export type Lang = 'ru' | 'ro'
+
 export type RenderEmailOpts = {
+  lang?: Lang
   greeting: string
   body: string
   /** Optional HTML block inserted between the body paragraph and the button */
@@ -8,9 +11,17 @@ export type RenderEmailOpts = {
   footer: string
 }
 
+const TAGLINE: Record<Lang, string> = {
+  ru: 'Строительные материалы и оборудование',
+  ro: 'Materiale de construcție și utilaje',
+}
+
 export function renderEmail(opts: RenderEmailOpts): string {
+  const lang = opts.lang ?? 'ru'
+  const tagline = TAGLINE[lang]
+
   return `<!DOCTYPE html>
-<html lang="ru">
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,7 +34,7 @@ export function renderEmail(opts: RenderEmailOpts): string {
           <tr>
             <td style="background:#dc2626;padding:32px 40px;text-align:center;">
               <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;">DenAlex</h1>
-              <p style="margin:4px 0 0;color:#fca5a5;font-size:13px;">Строительные материалы и оборудование</p>
+              <p style="margin:4px 0 0;color:#fca5a5;font-size:13px;">${tagline}</p>
             </td>
           </tr>
           <tr>
