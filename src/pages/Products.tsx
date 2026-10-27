@@ -8,18 +8,18 @@ import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { CatalogLoaderData } from '../lib/catalogLoader';
 import Seo from '../components/Seo';
+import { useTranslation } from 'react-i18next';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function Products() {
   const { slug } = useParams<{ slug?: string }>();
-  // key перезапускає компонент при переході між категоріями,
-  // щоб початковий стан знову взявся з даних loader
   return <ProductsView key={slug ?? 'all'} />;
 }
 
 function ProductsView() {
+  const { t } = useTranslation();
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
@@ -73,9 +73,8 @@ function ProductsView() {
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategory]); // запрос зависит только от категории
+  }, [selectedCategory]);
 
-  // Фильтр по тексту считается при рендере, без запросов к БД
   const products = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return allProducts;
@@ -124,11 +123,11 @@ function ProductsView() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Seo
-        title={activeCategory ? activeCategory.name : 'Строительные материалы'}
+        title={activeCategory ? activeCategory.name : t('products.seoTitle')}
         description={
           activeCategory
-            ? `${activeCategory.name} в ${BRAND_NAME}: цены и наличие.`
-            : `Каталог строительных материалов ${BRAND_NAME}: цены и наличие.`
+            ? t('products.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
+            : t('products.seoDesc', { brand: BRAND_NAME })
         }
         path={activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog'}
         jsonLd={{
@@ -138,13 +137,13 @@ function ProductsView() {
             {
               '@type': 'ListItem',
               position: 1,
-              name: 'Главная',
+              name: t('products.breadHome'),
               item: BRAND_URL,
             },
             {
               '@type': 'ListItem',
               position: 2,
-              name: 'Каталог',
+              name: t('products.breadCatalog'),
               item: `${BRAND_URL}/catalog`,
             },
             ...(activeCategory ? [{
@@ -157,8 +156,8 @@ function ProductsView() {
         }}
       />
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Строительные материалы</h1>
-        <p className="text-gray-600">Просмотрите наш обширный каталог качественных строительных материалов</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('products.title')}</h1>
+        <p className="text-gray-600">{t('products.subtitle')}</p>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-8">
@@ -166,12 +165,12 @@ function ProductsView() {
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
             <div className="flex items-center space-x-2 mb-4">
               <Filter className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Фильтры</h2>
+              <h2 className="text-lg font-semibold">{t('products.filters')}</h2>
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Поиск
+                {t('products.search')}
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -180,14 +179,14 @@ function ProductsView() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
-                  placeholder="Поиск товаров..."
+                  placeholder={t('products.searchPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Категория
+                {t('products.category')}
               </label>
               <div className="space-y-2">
                 <Link
@@ -198,7 +197,7 @@ function ProductsView() {
                       : 'hover:bg-gray-100'
                   }`}
                 >
-                  Все категории
+                  {t('products.allCategories')}
                 </Link>
                 {categories.map((category) => (
                   <Link
@@ -222,11 +221,11 @@ function ProductsView() {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
-              <p className="text-gray-600 mt-4">Загрузка товаров...</p>
+              <p className="text-gray-600 mt-4">{t('products.loading')}</p>
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg shadow-md">
-              <p className="text-gray-600">Товары не найдены</p>
+              <p className="text-gray-600">{t('products.notFound')}</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -269,7 +268,9 @@ function ProductsView() {
                           ? 'bg-green-100 text-green-700'
                           : 'bg-red-100 text-red-700'
                       }`}>
-                        {product.stock_quantity > 0 ? `${product.stock_quantity} в наличии` : 'Нет в наличии'}
+                        {product.stock_quantity > 0
+                          ? t('products.inStock', { count: product.stock_quantity })
+                          : t('products.outOfStock')}
                       </span>
                     </div>
                     <button
@@ -279,7 +280,7 @@ function ProductsView() {
                     >
                       <ShoppingCart className="w-5 h-5" />
                       <span>
-                        {addingToCart === product.id ? 'Добавление...' : 'Добавить в корзину'}
+                        {addingToCart === product.id ? t('products.adding') : t('products.addToCart')}
                       </span>
                     </button>
                   </div>

@@ -9,6 +9,7 @@ import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import type { EquipmentLoaderData } from '../lib/equipmentLoader';
 import Seo from '../components/Seo';
+import { useTranslation } from 'react-i18next';
 
 type Equipment = Database['public']['Tables']['equipment']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -19,6 +20,7 @@ export default function EquipmentPage() {
 }
 
 function EquipmentView() {
+  const { t } = useTranslation();
   const onNavigate = useAppNav();
   const { slug } = useParams<{ slug?: string }>();
   const { user } = useAuth();
@@ -113,7 +115,6 @@ function EquipmentView() {
     };
   }, [selectedEquipment]);
 
-  // Рядки 'YYYY-MM-DD' коректно порівнюються як текст
   const hasConflict =
     !!startDate &&
     !!endDate &&
@@ -129,7 +130,7 @@ function EquipmentView() {
 
     const days = calculateDays();
     if (days <= 0) {
-      toast.error('Пожалуйста, выберите действительные даты аренды');
+      toast.error(t('toast.invalidDates'));
       return;
     }
 
@@ -151,12 +152,12 @@ function EquipmentView() {
 
     if (error) {
       if (error.code === '23P01') {
-        toast.error('Это оборудование уже занято на выбранные даты. Пожалуйста, выберите другие даты.');
+        toast.error(t('toast.rentalConflict'));
       } else {
-        toast.error('Ошибка при отправке запроса на аренду');
+        toast.error(t('toast.rentalError'));
       }
     } else {
-      toast.success('Запрос на аренду успешно отправлен!');
+      toast.success(t('toast.rentalSuccess'));
       setSelectedEquipment(null);
       setStartDate('');
       setEndDate('');
@@ -169,17 +170,17 @@ function EquipmentView() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Seo
-        title={activeCategory ? activeCategory.name : 'Аренда оборудования'}
+        title={activeCategory ? activeCategory.name : t('equipment.seoTitle')}
         description={
           activeCategory
-            ? `${activeCategory.name} в аренду в ${BRAND_NAME}: цены за сутки и наличие.`
-            : `Аренда профессионального оборудования и инструмента в ${BRAND_NAME}: цены за сутки и наличие.`
+            ? t('equipment.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
+            : t('equipment.seoDesc', { brand: BRAND_NAME })
         }
         path={activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki'}
       />
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Аренда оборудования</h1>
-        <p className="text-gray-600">Профессиональные инструменты и оборудование для ваших строительных нужд</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('equipment.title')}</h1>
+        <p className="text-gray-600">{t('equipment.subtitle')}</p>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-8">
@@ -187,12 +188,12 @@ function EquipmentView() {
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
             <div className="flex items-center space-x-2 mb-4">
               <Filter className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold">Фильтры</h2>
+              <h2 className="text-lg font-semibold">{t('equipment.filters')}</h2>
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Поиск
+                {t('equipment.search')}
               </label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -201,14 +202,14 @@ function EquipmentView() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Поиск оборудования..."
+                  placeholder={t('equipment.searchPlaceholder')}
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Категория
+                {t('equipment.category')}
               </label>
               <div className="space-y-2">
                 <Link
@@ -219,7 +220,7 @@ function EquipmentView() {
                       : 'hover:bg-gray-100'
                   }`}
                 >
-                  Все категории
+                  {t('equipment.allCategories')}
                 </Link>
                 {categories.map((category) => (
                   <Link
@@ -243,11 +244,11 @@ function EquipmentView() {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-              <p className="text-gray-600 mt-4">Загрузка оборудования...</p>
+              <p className="text-gray-600 mt-4">{t('equipment.loading')}</p>
             </div>
           ) : equipment.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg shadow-md">
-              <p className="text-gray-600">Оборудование не найдено</p>
+              <p className="text-gray-600">{t('equipment.notFound')}</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -276,13 +277,13 @@ function EquipmentView() {
                     </p>
                     <div className="mb-3">
                       <div className="flex items-baseline justify-between mb-1">
-                        <span className="text-sm text-gray-600">Дневная ставка:</span>
+                        <span className="text-sm text-gray-600">{t('equipment.dailyRate')}</span>
                         <span className="text-xl font-bold text-green-600">
                           {item.daily_rate.toFixed(2)} MDL
                         </span>
                       </div>
                       <div className="flex items-baseline justify-between">
-                        <span className="text-sm text-gray-600">Депозит:</span>
+                        <span className="text-sm text-gray-600">{t('equipment.deposit')}</span>
                         <span className="text-sm font-medium text-gray-700">
                           {item.deposit_amount.toFixed(2)} MDL
                         </span>
@@ -293,7 +294,7 @@ function EquipmentView() {
                       className="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition flex items-center justify-center space-x-2 hover:scale-[1.02] active:scale-95"
                     >
                       <Calendar className="w-5 h-5" />
-                      <span>Запросить аренду</span>
+                      <span>{t('equipment.requestBtn')}</span>
                     </button>
                   </div>
                 </div>
@@ -307,7 +308,7 @@ function EquipmentView() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold">Запрос на аренду</h3>
+              <h3 className="text-2xl font-bold">{t('equipment.modalTitle')}</h3>
               <button
                 onClick={() => setSelectedEquipment(null)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition"
@@ -319,20 +320,20 @@ function EquipmentView() {
             <div className="mb-4">
               <h4 className="font-semibold text-lg mb-2">{selectedEquipment.name}</h4>
               <div className="text-sm text-gray-600 space-y-1">
-                <p>Дневная ставка: {selectedEquipment.daily_rate.toFixed(2)} MDL</p>
-                <p>Требуемый депозит: {selectedEquipment.deposit_amount.toFixed(2)} MDL</p>
+                <p>{t('equipment.rentalDailyRate')} {selectedEquipment.daily_rate.toFixed(2)} MDL</p>
+                <p>{t('equipment.depositRequired')} {selectedEquipment.deposit_amount.toFixed(2)} MDL</p>
               </div>
             </div>
 
             <div className="space-y-4">
               {busyRanges.length > 0 && (
                 <div className="text-sm text-gray-600 mb-3">
-                  <p className="font-medium">Занято:</p>
+                  <p className="font-medium">{t('equipment.busy')}</p>
                   <ul>
                     {busyRanges.map((b, i) => (
                       <li key={i}>
-                        {new Date(b.start_date).toLocaleDateString('ru-RU')} —{' '}
-                        {new Date(b.end_date).toLocaleDateString('ru-RU')}
+                        {new Date(b.start_date).toLocaleDateString()} —{' '}
+                        {new Date(b.end_date).toLocaleDateString()}
                       </li>
                     ))}
                   </ul>
@@ -340,7 +341,7 @@ function EquipmentView() {
               )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Дата начала
+                  {t('equipment.startDate')}
                 </label>
                 <input
                   type="date"
@@ -353,7 +354,7 @@ function EquipmentView() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Дата окончания
+                  {t('equipment.endDate')}
                 </label>
                 <input
                   type="date"
@@ -366,26 +367,26 @@ function EquipmentView() {
 
               {hasConflict && (
                 <p className="text-sm text-red-600 mb-3">
-                  Выбранные даты пересекаются с занятым периодом.
+                  {t('equipment.datesConflict')}
                 </p>
               )}
 
               {startDate && endDate && calculateDays() > 0 && (
                 <div className="bg-green-50 p-4 rounded-lg">
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">Дней аренды:</span>
+                    <span className="text-sm text-gray-600">{t('equipment.rentalDays')}</span>
                     <span className="font-semibold">{calculateDays()}</span>
                   </div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">Дневная ставка:</span>
+                    <span className="text-sm text-gray-600">{t('equipment.rentalDailyRate')}</span>
                     <span className="font-semibold">{selectedEquipment.daily_rate.toFixed(2)} MDL</span>
                   </div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-600">Депозит:</span>
+                    <span className="text-sm text-gray-600">{t('equipment.rentalDeposit')}</span>
                     <span className="font-semibold">{selectedEquipment.deposit_amount.toFixed(2)} MDL</span>
                   </div>
                   <div className="border-t border-green-200 mt-2 pt-2 flex justify-between">
-                    <span className="font-semibold">Итого:</span>
+                    <span className="font-semibold">{t('equipment.rentalTotal')}</span>
                     <span className="text-xl font-bold text-green-600">
                       {(selectedEquipment.daily_rate * calculateDays()).toFixed(2)} MDL
                     </span>
@@ -398,7 +399,7 @@ function EquipmentView() {
                 disabled={!startDate || !endDate || calculateDays() <= 0 || submitting || hasConflict}
                 className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Отправка...' : 'Отправить запрос'}
+                {submitting ? t('equipment.sending') : t('equipment.sendBtn')}
               </button>
             </div>
           </div>

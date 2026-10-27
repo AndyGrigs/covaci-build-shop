@@ -2,8 +2,10 @@ import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
   const [invalid, setInvalid] = useState(false);
@@ -12,8 +14,6 @@ export default function ResetPassword() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // Following the reset link creates a temporary session and fires PASSWORD_RECOVERY.
-    // We also accept SIGNED_IN in case the client parsed the URL hash before this effect ran.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') setReady(true);
     });
@@ -33,11 +33,11 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (password.length < 6) {
-      toast.error('Пароль должен содержать не менее 6 символов');
+      toast.error(t('reset.passwordTooShort'));
       return;
     }
     if (password !== confirm) {
-      toast.error('Пароли не совпадают');
+      toast.error(t('reset.passwordMismatch'));
       return;
     }
 
@@ -50,7 +50,7 @@ export default function ResetPassword() {
       return;
     }
 
-    toast.success('Пароль обновлён');
+    toast.success(t('reset.success'));
     navigate('/kabinet');
   };
 
@@ -58,8 +58,8 @@ export default function ResetPassword() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4 text-center">
         <div>
-          <h2 className="text-2xl font-bold mb-2">Ссылка недействительна</h2>
-          <p className="text-gray-600">Возможно, срок действия истёк. Запросите новую.</p>
+          <h2 className="text-2xl font-bold mb-2">{t('reset.invalidTitle')}</h2>
+          <p className="text-gray-600">{t('reset.invalidDesc')}</p>
         </div>
       </div>
     );
@@ -68,7 +68,7 @@ export default function ResetPassword() {
   if (!ready) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <p className="text-gray-500">Проверка ссылки...</p>
+        <p className="text-gray-500">{t('reset.checking')}</p>
       </div>
     );
   }
@@ -80,8 +80,8 @@ export default function ResetPassword() {
         className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6"
       >
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Новый пароль</h2>
-          <p className="text-gray-600 mt-2">Придумайте надёжный пароль для вашего аккаунта.</p>
+          <h2 className="text-3xl font-bold text-gray-900">{t('reset.title')}</h2>
+          <p className="text-gray-600 mt-2">{t('reset.subtitle')}</p>
         </div>
 
         <input
@@ -89,7 +89,7 @@ export default function ResetPassword() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition"
-          placeholder="Новый пароль"
+          placeholder={t('reset.newPassword')}
           required
         />
         <input
@@ -97,7 +97,7 @@ export default function ResetPassword() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition"
-          placeholder="Повторите пароль"
+          placeholder={t('reset.confirmPassword')}
           required
         />
 
@@ -106,7 +106,7 @@ export default function ResetPassword() {
           disabled={saving}
           className="w-full bg-brand text-gray-900 py-3 rounded-lg font-medium hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {saving ? 'Сохранение...' : 'Сохранить пароль'}
+          {saving ? t('reset.saving') : t('reset.submit')}
         </button>
       </form>
     </div>

@@ -30,7 +30,7 @@ function Providers() {
   return (
     <AuthProvider>
       <Head>
-        <title>{`${BRAND_NAME} — строительные материалы и аренда оборудования`}</title>
+        <title>{`${BRAND_NAME}`}</title>
       </Head>
       <Outlet />
     </AuthProvider>

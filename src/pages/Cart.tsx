@@ -6,12 +6,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
+import { useTranslation } from 'react-i18next';
 
 type CartItem = Database['public']['Tables']['cart_items']['Row'] & {
   products: Database['public']['Tables']['products']['Row'];
 };
 
 export default function Cart() {
+  const { t } = useTranslation();
   const onNavigate = useAppNav();
   const { user, profile } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -76,7 +78,7 @@ export default function Cart() {
     if (!user || cartItems.length === 0) return;
 
     if (!deliveryAddress.trim()) {
-      toast.error('Пожалуйста, введите адрес доставки');
+      toast.error(t('toast.deliveryRequired'));
       return;
     }
 
@@ -93,10 +95,10 @@ export default function Cart() {
         notes,
       });
 
-      toast.success('Заказ успешно оформлен!');
+      toast.success(t('toast.checkoutSuccess'));
       onNavigate('cabinet');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Ошибка при оформлении заказа');
+      toast.error(error instanceof Error ? error.message : t('toast.checkoutError'));
     } finally {
       setProcessing(false);
     }
@@ -106,13 +108,13 @@ export default function Cart() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Пожалуйста, войдите</h2>
-        <p className="text-gray-600 mb-6">Вам нужно войти в систему, чтобы увидеть вашу корзину</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('cart.loginRequired')}</h2>
+        <p className="text-gray-600 mb-6">{t('cart.loginRequiredDesc')}</p>
         <button
           onClick={() => onNavigate('login')}
           className="px-6 py-3 bg-brand text-gray-900 rounded-lg font-medium hover:bg-brand-dark transition"
         >
-          Войти
+          {t('cart.loginBtn')}
         </button>
       </div>
     );
@@ -122,7 +124,7 @@ export default function Cart() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto"></div>
-        <p className="text-gray-600 mt-4">Загрузка корзины...</p>
+        <p className="text-gray-600 mt-4">{t('cart.loading')}</p>
       </div>
     );
   }
@@ -131,13 +133,13 @@ export default function Cart() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Ваша корзина пуста</h2>
-        <p className="text-gray-600 mb-6">Добавьте несколько товаров, чтобы начать</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('cart.empty')}</h2>
+        <p className="text-gray-600 mb-6">{t('cart.emptyDesc')}</p>
         <button
           onClick={() => onNavigate('products')}
           className="px-6 py-3 bg-brand text-gray-900 rounded-lg font-medium hover:bg-brand-dark transition"
         >
-          Просмотр товаров
+          {t('cart.browse')}
         </button>
       </div>
     );
@@ -145,7 +147,7 @@ export default function Cart() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Корзина покупок</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">{t('cart.title')}</h1>
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
@@ -209,15 +211,15 @@ export default function Cart() {
 
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-            <h2 className="text-xl font-bold mb-4">Сводка заказа</h2>
+            <h2 className="text-xl font-bold mb-4">{t('cart.orderSummary')}</h2>
 
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
-                <span className="text-gray-600">Промежуточный итог:</span>
+                <span className="text-gray-600">{t('cart.subtotal')}</span>
                 <span className="font-semibold">{calculateTotal().toFixed(2)} MDL</span>
               </div>
               <div className="border-t pt-3 flex justify-between">
-                <span className="text-lg font-bold">Итого:</span>
+                <span className="text-lg font-bold">{t('cart.total')}</span>
                 <span className="text-2xl font-bold text-yellow-600">
                   {calculateTotal().toFixed(2)} MDL
                 </span>
@@ -227,28 +229,28 @@ export default function Cart() {
             <div className="space-y-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Адрес доставки
+                  {t('cart.deliveryAddress')}
                 </label>
                 <textarea
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                   rows={3}
-                  placeholder="Введите адрес доставки..."
+                  placeholder={t('cart.deliveryPlaceholder')}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Примечания (необязательно)
+                  {t('cart.notes')}
                 </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent"
                   rows={2}
-                  placeholder="Любые специальные инструкции..."
+                  placeholder={t('cart.notesPlaceholder')}
                 />
               </div>
             </div>
@@ -258,7 +260,7 @@ export default function Cart() {
               disabled={processing}
               className="w-full bg-brand text-gray-900 py-3 rounded-lg font-semibold hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {processing ? 'Обработка...' : 'Перейти к оформлению заказа'}
+              {processing ? t('cart.processing') : t('cart.checkoutBtn')}
             </button>
           </div>
         </div>

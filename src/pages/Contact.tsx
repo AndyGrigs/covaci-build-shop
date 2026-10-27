@@ -1,13 +1,16 @@
 import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 import Seo from '../components/Seo';
 import { BRAND_NAME, BRAND_URL, BRAND_PHONE, BRAND_PHONE_RAW } from '../lib/brand';
+import { useTranslation } from 'react-i18next';
 
 export default function Contact() {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <Seo
-        title="Контакты"
-        description={`Контакты ${BRAND_NAME}: адрес, телефоны и электронная почта.`}
+        title={t('seo.contacts.title')}
+        description={t('seo.contacts.desc', { brand: BRAND_NAME })}
         path="/kontakt"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -39,8 +42,8 @@ export default function Contact() {
           ],
         }}
       />
-      <h1 className="text-4xl font-bold text-gray-900 mb-2">Контакты</h1>
-      <p className="text-gray-500 mb-10">Свяжитесь с нами любым удобным способом</p>
+      <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('contact.title')}</h1>
+      <p className="text-gray-500 mb-10">{t('contact.subtitle')}</p>
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -49,7 +52,7 @@ export default function Contact() {
               <MapPin className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800">Адрес</p>
+              <p className="font-semibold text-gray-800">{t('contact.address')}</p>
               <p className="text-gray-500">с. Самурза Taraclia 7419</p>
             </div>
           </div>
@@ -59,7 +62,7 @@ export default function Contact() {
               <Phone className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800">Телефон</p>
+              <p className="font-semibold text-gray-800">{t('contact.phone')}</p>
               <a href={`tel:${BRAND_PHONE_RAW}`} className="text-gray-500 hover:text-yellow-500 transition">
                 {BRAND_PHONE}
               </a>
@@ -71,9 +74,9 @@ export default function Contact() {
               <Clock className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800">Часы работы</p>
-              <p className="text-gray-500">Пн–Пт: 8:00 – 18:00</p>
-              <p className="text-gray-500">Сб: 9:00 – 14:00</p>
+              <p className="font-semibold text-gray-800">{t('contact.hours')}</p>
+              <p className="text-gray-500">{t('contact.hoursWeek')}</p>
+              <p className="text-gray-500">{t('contact.hoursSat')}</p>
             </div>
           </div>
 
@@ -82,7 +85,7 @@ export default function Contact() {
               <Mail className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="font-semibold text-gray-800">Email</p>
+              <p className="font-semibold text-gray-800">{t('contact.email')}</p>
               <a href="mailto:info@denalexshop.md" className="text-gray-500 hover:text-yellow-500 transition">
                 info@denalexshop.md
               </a>
@@ -91,7 +94,7 @@ export default function Contact() {
         </div>
 
         <div className="bg-gray-100 rounded-xl h-64 md:h-auto flex items-center justify-center text-gray-400">
-          <p className="text-sm">Карта — скоро</p>
+          <p className="text-sm">{t('contact.mapSoon')}</p>
         </div>
       </div>
     </div>

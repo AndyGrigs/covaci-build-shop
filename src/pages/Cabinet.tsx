@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Package, Calendar, Edit, Save, Settings } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
+import { useTranslation } from 'react-i18next';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   order_items: (Database['public']['Tables']['order_items']['Row'] & {
@@ -17,6 +18,7 @@ type Rental = Database['public']['Tables']['rentals']['Row'] & {
 };
 
 export default function Cabinet() {
+  const { t } = useTranslation();
   const onNavigate = useAppNav();
   const { user, profile, isAdmin, loading: authLoading, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'rentals'>('profile');
@@ -93,25 +95,20 @@ export default function Cabinet() {
     try {
       await updateProfile(formData);
       setEditing(false);
-      toast.success('Профиль успешно обновлен!');
+      toast.success(t('toast.profileSaved'));
     } catch (error) {
-      toast.error('Ошибка при обновлении профиля');
+      toast.error(t('toast.profileError'));
     }
   };
 
-  const ORDER_STATUS_LABELS: Record<string, string> = {
-    pending:   'Ожидает',
-    confirmed: 'Подтверждён',
-    shipped:   'Отправлен',
-    delivered: 'Доставлен',
-    cancelled: 'Отменён',
+  const getOrderStatusLabel = (status: string) => {
+    const key = `status.order.${status}` as const;
+    return t(key, { defaultValue: status });
   };
 
-  const RENTAL_STATUS_LABELS: Record<string, string> = {
-    pending:   'Ожидает',
-    active:    'Активна',
-    completed: 'Завершена',
-    cancelled: 'Отменена',
+  const getRentalStatusLabel = (status: string) => {
+    const key = `status.rental.${status}` as const;
+    return t(key, { defaultValue: status });
   };
 
   const STATUS_COLORS: Record<string, string> = {
@@ -138,7 +135,7 @@ export default function Cabinet() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Личный кабинет</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">{t('cabinet.title')}</h1>
 
       <div className="mb-6 border-b border-gray-200">
         <div className="flex space-x-8">
@@ -151,7 +148,7 @@ export default function Cabinet() {
             }`}
           >
             <User className="w-5 h-5 inline mr-2" />
-            Профиль
+            {t('cabinet.profile')}
           </button>
           <button
             onClick={() => setActiveTab('orders')}
@@ -162,7 +159,7 @@ export default function Cabinet() {
             }`}
           >
             <Package className="w-5 h-5 inline mr-2" />
-            Заказы ({orders.length})
+            {t('cabinet.orders', { count: orders.length })}
           </button>
           <button
             onClick={() => setActiveTab('rentals')}
@@ -173,7 +170,7 @@ export default function Cabinet() {
             }`}
           >
             <Calendar className="w-5 h-5 inline mr-2" />
-            Аренда ({rentals.length})
+            {t('cabinet.rentals', { count: rentals.length })}
           </button>
           {isAdmin && (
             <button
@@ -181,7 +178,7 @@ export default function Cabinet() {
               className="pb-4 px-2 font-medium transition flex items-center space-x-2 text-gray-500 hover:text-gray-700"
             >
               <Settings className="w-5 h-5" />
-              <span>Админ-панель</span>
+              <span>{t('cabinet.adminPanel')}</span>
             </button>
           )}
         </div>
@@ -190,14 +187,14 @@ export default function Cabinet() {
       {activeTab === 'profile' && (
         <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Информация профиля</h2>
+            <h2 className="text-2xl font-bold">{t('cabinet.profileInfo')}</h2>
             {!editing ? (
               <button
                 onClick={() => setEditing(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 <Edit className="w-4 h-4" />
-                <span>Редактировать</span>
+                <span>{t('cabinet.edit')}</span>
               </button>
             ) : (
               <button
@@ -205,7 +202,7 @@ export default function Cabinet() {
                 className="flex items-center space-x-2 px-4 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
                 <Save className="w-4 h-4" />
-                <span>Сохранить</span>
+                <span>{t('cabinet.save')}</span>
               </button>
             )}
           </div>
@@ -213,7 +210,7 @@ export default function Cabinet() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Полное имя
+                {t('cabinet.fullName')}
               </label>
               <input
                 type="text"
@@ -226,7 +223,7 @@ export default function Cabinet() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                {t('cabinet.email')}
               </label>
               <input
                 type="email"
@@ -238,7 +235,7 @@ export default function Cabinet() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Телефон
+                {t('cabinet.phone')}
               </label>
               <input
                 type="tel"
@@ -251,7 +248,7 @@ export default function Cabinet() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Название компании (необязательно)
+                {t('cabinet.company')}
               </label>
               <input
                 type="text"
@@ -264,7 +261,7 @@ export default function Cabinet() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Адрес
+                {t('cabinet.address')}
               </label>
               <textarea
                 value={formData.address}
@@ -283,12 +280,12 @@ export default function Cabinet() {
           {orders.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-12 text-center">
               <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Заказов пока нет</p>
+              <p className="text-gray-600">{t('cabinet.noOrders')}</p>
               <button
                 onClick={() => onNavigate('products')}
                 className="mt-4 px-6 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
-                Начать покупки
+                {t('cabinet.startShopping')}
               </button>
             </div>
           ) : (
@@ -297,24 +294,24 @@ export default function Cabinet() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      Заказ #{order.id.slice(0, 8)}
+                      {t('cabinet.order', { id: order.id.slice(0, 8) })}
                     </h3>
                     <p className="text-sm text-gray-600">
                       {new Date(order.created_at ?? '').toLocaleDateString()}
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                    {ORDER_STATUS_LABELS[order.status] ?? order.status}
+                    {getOrderStatusLabel(order.status)}
                   </span>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4 mb-4">
                   <p className="text-sm text-gray-600 mb-2">
-                    <strong>Адрес доставки:</strong> {order.delivery_address}
+                    <strong>{t('cabinet.deliveryAddress')}</strong> {order.delivery_address}
                   </p>
                   {order.notes && (
                     <p className="text-sm text-gray-600">
-                      <strong>Примечания:</strong> {order.notes}
+                      <strong>{t('cabinet.orderNotes')}</strong> {order.notes}
                     </p>
                   )}
                 </div>
@@ -323,7 +320,7 @@ export default function Cabinet() {
                   {order.order_items.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <span>
-                        {item.products?.name || 'Товар'} x {item.quantity}
+                        {item.products?.name || t('cabinet.product')} x {item.quantity}
                       </span>
                       <span className="font-medium">{item.subtotal.toFixed(2)} MDL</span>
                     </div>
@@ -331,7 +328,7 @@ export default function Cabinet() {
                 </div>
 
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
-                  <span className="font-semibold">Итого:</span>
+                  <span className="font-semibold">{t('cabinet.orderTotal')}</span>
                   <span className="text-xl font-bold text-yellow-600">
                     {order.total_amount.toFixed(2)} MDL
                   </span>
@@ -347,12 +344,12 @@ export default function Cabinet() {
           {rentals.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-12 text-center">
               <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Нет истории аренды</p>
+              <p className="text-gray-600">{t('cabinet.noRentals')}</p>
               <button
                 onClick={() => onNavigate('equipment')}
                 className="mt-4 px-6 py-2 bg-brand text-gray-900 rounded-lg hover:bg-brand-dark transition"
               >
-                Просмотр оборудования
+                {t('cabinet.viewEquipment')}
               </button>
             </div>
           ) : (
@@ -361,47 +358,47 @@ export default function Cabinet() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {rental.equipment_name || rental.equipment?.name || 'Оборудование'}
+                      {rental.equipment_name || rental.equipment?.name || t('cabinet.equipment')}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Запрошено: {new Date(rental.created_at ?? '').toLocaleDateString()}
+                      {t('cabinet.requested')} {new Date(rental.created_at ?? '').toLocaleDateString()}
                     </p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(rental.status)}`}>
-                    {RENTAL_STATUS_LABELS[rental.status] ?? rental.status}
+                    {getRentalStatusLabel(rental.status)}
                   </span>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <p className="text-sm text-gray-600">
-                      <strong>Дата начала:</strong> {new Date(rental.start_date).toLocaleDateString()}
+                      <strong>{t('cabinet.startDate')}</strong> {new Date(rental.start_date).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-600">
-                      <strong>Дата окончания:</strong> {new Date(rental.end_date).toLocaleDateString()}
+                      <strong>{t('cabinet.endDate')}</strong> {new Date(rental.end_date).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">
-                      <strong>Всего дней:</strong> {rental.total_days}
+                      <strong>{t('cabinet.totalDays')}</strong> {rental.total_days}
                     </p>
                     <p className="text-sm text-gray-600">
-                      <strong>Дневная ставка:</strong> {rental.daily_rate.toFixed(2)} MDL
+                      <strong>{t('cabinet.dailyRate')}</strong> {rental.daily_rate.toFixed(2)} MDL
                     </p>
                     <p className="text-sm text-gray-600">
-                      <strong>Депозит:</strong> {rental.deposit_paid.toFixed(2)} MDL
+                      <strong>{t('cabinet.depositPaid')}</strong> {rental.deposit_paid.toFixed(2)} MDL
                     </p>
                   </div>
                 </div>
 
                 {rental.notes && (
                   <p className="text-sm text-gray-600 mb-4">
-                    <strong>Примечания:</strong> {rental.notes}
+                    <strong>{t('cabinet.rentalNotes')}</strong> {rental.notes}
                   </p>
                 )}
 
                 <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
-                  <span className="font-semibold">Общая сумма:</span>
+                  <span className="font-semibold">{t('cabinet.rentalTotal')}</span>
                   <span className="text-xl font-bold text-green-600">
                     {rental.total_amount.toFixed(2)} MDL
                   </span>

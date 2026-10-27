@@ -13,12 +13,11 @@ import { supabase } from "../lib/supabase";
 import type { Database } from "../types/database";
 import type { HomeLoaderData } from "../lib/homeLoader";
 import { BRAND_NAME, BRAND_URL, BRAND_PHONE } from "../lib/brand";
+import { useTranslation } from "react-i18next";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 
-
-// Статичні зображення для категорий (на случай если в БД нет фото)
 const CATEGORY_IMAGES: Record<string, string> = {
   default: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=400&auto=format&fit=crop",
   цемент: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=400&auto=format&fit=crop",
@@ -38,8 +37,8 @@ const EQUIPMENT_IMAGES: Record<string, string> = {
   каток: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?q=80&w=600&auto=format&fit=crop",
 };
 
-
 export default function Home() {
+  const { t } = useTranslation();
   const onNavigate = useAppNav();
   const initial = useLoaderData() as HomeLoaderData | undefined;
   const [categories, setCategories] = useState<Category[]>(initial?.categories ?? []);
@@ -76,7 +75,6 @@ export default function Home() {
     return matchedKey ? EQUIPMENT_IMAGES[matchedKey] : EQUIPMENT_IMAGES.default;
   };
 
-   // Функция для получения изображения категории
   const getCategoryImage = (category: Category): string => {
     if (category.image_url) return category.image_url;
     const nameLower = category.name.toLowerCase();
@@ -86,12 +84,11 @@ export default function Home() {
     return matchedKey ? CATEGORY_IMAGES[matchedKey] : CATEGORY_IMAGES.default;
   };
 
-
   return (
     <div>
       <Seo
-        title={`${BRAND_NAME} — строительные материалы и аренда оборудования`}
-        description={`${BRAND_NAME}: качественные строительные материалы и аренда профессионального оборудования.`}
+        title={t('seo.home.title', { brand: BRAND_NAME })}
+        description={t('seo.home.desc', { brand: BRAND_NAME })}
         path="/"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -124,53 +121,51 @@ export default function Home() {
         }}
       />
 
-      {/* ===== HERO СЕКЦИЯ ===== */}
+      {/* HERO */}
       <section className="bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center min-h-[520px] py-12 gap-8">
 
-            {/* Левая часть — текст */}
             <div className="flex-1 z-10">
               <h1 className="text-5xl lg:text-6xl font-black text-gray-900 leading-tight mb-6">
-                Все для<br />
-                строительства<br />
-                <span className="text-gray-900">в одном месте</span>
+                {t('home.hero.line1')}<br />
+                {t('home.hero.line2')}<br />
+                <span className="text-gray-900">{t('home.hero.line3')}</span>
               </h1>
               <p className="text-gray-500 text-lg mb-8 max-w-md leading-relaxed">
-                Строительные материалы, спецтехника в аренду<br />
-                и профессиональные услуги
+                {t('home.hero.subtitle').split('\n').map((line, i) => (
+                  <span key={i}>{line}{i === 0 && <br />}</span>
+                ))}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
                   to="/catalog"
                   className="inline-flex items-center space-x-2 px-7 py-3.5 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition"
                 >
-                  <span>Каталог товаров</span>
+                  <span>{t('home.hero.catalogBtn')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
                 <Link
                   to="/arenda-tehniki"
                   className="inline-flex items-center space-x-2 px-7 py-3.5 border-2 border-gray-300 text-gray-700 font-semibold rounded hover:border-gray-400 transition"
                 >
-                  <span>Аренда техники</span>
+                  <span>{t('home.hero.equipmentBtn')}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
             </div>
 
-            {/* Правая часть — изображение */}
             <div className="flex-1 relative flex items-center justify-center">
               <img
-                // src="https://i.pinimg.com/1200x/56/69/f7/5669f7b86249c9e966ef3d16847d84a3.jpg"
                 src="/shop.jpg"
-                alt="Строительная техника"
+                alt={t('home.hero.imgAlt')}
                 className="w-full max-w-xl object-contain drop-shadow-2xl rounded-lg"
               />
             </div>
           </div>
         </div>
 
-        {/* ===== 4 ПРЕИМУЩЕСТВА под hero ===== */}
+        {/* Features strip */}
         <div className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -179,8 +174,8 @@ export default function Home() {
                   <Package className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Широкий ассортимент</p>
-                  <p className="text-xs text-gray-500">материалов</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('home.feat.range')}</p>
+                  <p className="text-xs text-gray-500">{t('home.feat.rangeSub')}</p>
                 </div>
               </div>
 
@@ -189,8 +184,8 @@ export default function Home() {
                   <Wrench className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Современная техника</p>
-                  <p className="text-xs text-gray-500">в аренду</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('home.feat.modern')}</p>
+                  <p className="text-xs text-gray-500">{t('home.feat.modernSub')}</p>
                 </div>
               </div>
 
@@ -199,8 +194,8 @@ export default function Home() {
                   <Truck className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Доставка по всей</p>
-                  <p className="text-xs text-gray-500">Молдове</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('home.feat.delivery')}</p>
+                  <p className="text-xs text-gray-500">{t('home.feat.deliverySub')}</p>
                 </div>
               </div>
 
@@ -209,8 +204,8 @@ export default function Home() {
                   <ShieldCheck className="w-5 h-5 text-yellow-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">Гарантия качества</p>
-                  <p className="text-xs text-gray-500">и надёжности</p>
+                  <p className="text-sm font-semibold text-gray-800">{t('home.feat.quality')}</p>
+                  <p className="text-xs text-gray-500">{t('home.feat.qualitySub')}</p>
                 </div>
               </div>
             </div>
@@ -218,101 +213,92 @@ export default function Home() {
         </div>
       </section>
 
-       {/* ===== СЕКЦИЯ "ПОПУЛЯРНЫЕ КАТЕГОРИИ" ===== */}
+      {/* Popular categories */}
       {(loading || categories.length > 0) && (
-      <section className="py-14 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-14 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {t('home.categories.title')}
+              </h2>
+              <button
+                onClick={() => onNavigate("products")}
+                className="inline-flex items-center space-x-1 text-gray-600 hover:text-yellow-500 font-medium transition text-sm"
+              >
+                <span>{t('home.categories.all')}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
 
-          {/* Заголовок секции */}
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Популярные категории
-            </h2>
-            <button
-              onClick={() => onNavigate("products")}
-              className="inline-flex items-center space-x-1 text-gray-600 hover:text-yellow-500 font-medium transition text-sm"
-            >
-              <span>Все категории</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Сетка категорий */}
-          {!loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categories.filter((c) => c.slug).map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/catalog/${category.slug}`}
-                  className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
-                >
-                  {/* Фото категории */}
-                  <div className="h-36 overflow-hidden bg-gray-50">
-                    <img
-                      src={getCategoryImage(category)}
-                      alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  {/* Название и цена */}
-                  <div className="p-3">
-                    <p className="text-sm font-semibold text-gray-800 leading-tight mb-1">
-                      {category.name}
-                    </p>
-                    <div className="flex items-center justify-end">
-                      <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
+            {!loading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {categories.filter((c) => c.slug).map((category) => (
+                  <Link
+                    key={category.id}
+                    to={`/catalog/${category.slug}`}
+                    className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-md transition-all duration-200 text-left"
+                  >
+                    <div className="h-36 overflow-hidden bg-gray-50">
+                      <img
+                        src={getCategoryImage(category)}
+                        alt={category.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            /* Заглушка пока загружаются данные */
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-gray-100 rounded-lg h-52 animate-pulse" />
-              ))}
-            </div>
-          )}
-
-        </div>
-      </section>
+                    <div className="p-3">
+                      <p className="text-sm font-semibold text-gray-800 leading-tight mb-1">
+                        {category.name}
+                      </p>
+                      <div className="flex items-center justify-end">
+                        <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-gray-100 rounded-lg h-52 animate-pulse" />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       )}
 
-       {/* ===== СЕКЦИЯ "АРЕНДА ТЕХНИКИ" ===== */}
+      {/* Equipment section */}
       <section className="py-14 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-10">
 
-            {/* Левая часть — заголовок и кнопка */}
             <div className="lg:w-64 flex-shrink-0 flex flex-col justify-center">
-              {/* Лейбл "АРЕНДА ТЕХНИКИ" */}
               <div className="flex items-center space-x-2 mb-3">
                 <div className="w-4 h-4 bg-yellow-400 rounded-sm flex-shrink-0" />
                 <span className="text-xs font-bold text-yellow-500 uppercase tracking-widest">
-                  Аренда техники
+                  {t('home.equip.badge')}
                 </span>
               </div>
 
               <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
-                Надёжная техника<br />
-                для любых задач
+                {t('home.equip.title').split('\n').map((line, i) => (
+                  <span key={i}>{line}{i === 0 && <br />}</span>
+                ))}
               </h2>
 
               <p className="text-gray-500 text-sm leading-relaxed mb-8">
-                Аренда строительной и спецтехники на выгодных условиях. Опытные операторы и полное техническое обслуживание.
+                {t('home.equip.desc')}
               </p>
 
               <Link
                 to="/arenda-tehniki"
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-yellow-400 text-gray-900 font-semibold rounded hover:bg-yellow-500 transition w-fit"
               >
-                <span>Посмотреть технику</span>
+                <span>{t('home.equip.btn')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Правая часть — карточки техники */}
             <div className="flex-1 relative">
               {!loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -321,7 +307,6 @@ export default function Home() {
                       key={item.id}
                       className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                     >
-                      {/* Фото */}
                       <div className="h-44 bg-gray-50 overflow-hidden">
                         <img
                           src={getEquipmentImage(item)}
@@ -330,27 +315,25 @@ export default function Home() {
                         />
                       </div>
 
-                      {/* Информация */}
                       <div className="p-4">
                         <h3 className="font-semibold text-gray-800 text-sm mb-2 leading-tight">
                           {item.name}
                         </h3>
                         <p className="text-yellow-500 font-bold text-sm mb-3">
                           от {item.daily_rate.toLocaleString("ru-RU")} MDL
-                          <span className="text-gray-400 font-normal text-xs"> / смена</span>
+                          <span className="text-gray-400 font-normal text-xs"> {t('home.equip.perShift')}</span>
                         </p>
                         <button
                           onClick={() => onNavigate("equipment")}
                           className="w-full py-2 border border-gray-300 text-gray-700 text-sm rounded hover:border-yellow-400 hover:text-yellow-500 transition"
                         >
-                          Подробнее
+                          {t('home.equip.details')}
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                /* Скелетон пока загружается */
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[...Array(3)].map((_, i) => (
                     <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -369,7 +352,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ===== ПОЛОСА С 4 ПРЕИМУЩЕСТВАМИ ===== */}
+        {/* Advantages strip */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 border-t border-gray-100 pt-10">
 
@@ -378,8 +361,8 @@ export default function Home() {
                 <ShieldCheck className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Большой опыт</p>
-                <p className="text-xs text-gray-500">более 10 лет на рынке</p>
+                <p className="text-sm font-semibold text-gray-800">{t('home.adv.experience')}</p>
+                <p className="text-xs text-gray-500">{t('home.adv.experienceSub')}</p>
               </div>
             </div>
 
@@ -388,8 +371,8 @@ export default function Home() {
                 <Wrench className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Индивидуальный подход</p>
-                <p className="text-xs text-gray-500">подберём решение для вас</p>
+                <p className="text-sm font-semibold text-gray-800">{t('home.adv.individual')}</p>
+                <p className="text-xs text-gray-500">{t('home.adv.individualSub')}</p>
               </div>
             </div>
 
@@ -398,8 +381,8 @@ export default function Home() {
                 <Package className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Гибкие условия</p>
-                <p className="text-xs text-gray-500">для постоянных клиентов</p>
+                <p className="text-sm font-semibold text-gray-800">{t('home.adv.flexible')}</p>
+                <p className="text-xs text-gray-500">{t('home.adv.flexibleSub')}</p>
               </div>
             </div>
 
@@ -408,8 +391,8 @@ export default function Home() {
                 <Truck className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Быстрая доставка</p>
-                <p className="text-xs text-gray-500">в день заказа</p>
+                <p className="text-sm font-semibold text-gray-800">{t('home.adv.fast')}</p>
+                <p className="text-xs text-gray-500">{t('home.adv.fastSub')}</p>
               </div>
             </div>
 

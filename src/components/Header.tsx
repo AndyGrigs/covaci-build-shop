@@ -17,22 +17,31 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { BRAND_NAME, BRAND_PHONE } from "../lib/brand";
-
-const navLinks = [
-  { label: "Главная", path: "/" },
-  { label: "Каталог", path: "/catalog", icon: <ChevronDown className="w-4 h-4" /> },
-  { label: "Аренда техники", path: "/arenda-tehniki" },
-  { label: "Услуги", path: "" },
-  { label: "О нас", path: "" },
-  { label: "Контакты", path: "/kontakt" },
-];
+import { useTranslation } from "react-i18next";
+import { setLanguage, getLanguage } from "../i18n";
 
 export default function Header() {
+  const { t } = useTranslation();
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [cartCount, setCartCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lang, setLang] = useState<'ru' | 'ro'>(getLanguage());
+
+  const navLinks = [
+    { label: t('nav.home'), path: "/" },
+    { label: t('nav.catalog'), path: "/catalog", icon: <ChevronDown className="w-4 h-4" /> },
+    { label: t('nav.equipment'), path: "/arenda-tehniki" },
+    { label: t('nav.services'), path: "" },
+    { label: t('nav.about'), path: "" },
+    { label: t('nav.contacts'), path: "/kontakt" },
+  ];
+
+  const handleLangSwitch = (l: 'ru' | 'ro') => {
+    setLanguage(l);
+    setLang(l);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -107,7 +116,7 @@ export default function Header() {
               </span>
               <span className="flex items-center space-x-1">
                 <Clock className="w-3.5 h-3.5 text-brand" />
-                <span>Пн-Пт: 8:00 - 18:00</span>
+                <span>{t('header.hours')}</span>
               </span>
             </div>
             <div className="flex items-center space-x-4">
@@ -116,7 +125,26 @@ export default function Header() {
                 <span>{BRAND_PHONE}</span>
               </span>
               <span className="text-gray-500">|</span>
-              <span className="text-gray-300 cursor-pointer hover:text-white transition">MD</span>
+              {/* Language switcher */}
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={() => handleLangSwitch('ru')}
+                  className={`text-xs font-semibold px-1.5 py-0.5 rounded transition ${
+                    lang === 'ru' ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  RU
+                </button>
+                <span className="text-gray-600">|</span>
+                <button
+                  onClick={() => handleLangSwitch('ro')}
+                  className={`text-xs font-semibold px-1.5 py-0.5 rounded transition ${
+                    lang === 'ro' ? 'text-white bg-gray-700' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  RO
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -191,7 +219,7 @@ export default function Header() {
                       <button
                         onClick={() => navigate("/admin")}
                         className="p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
-                        title="Админ панель"
+                        title={t('header.adminPanel')}
                       >
                         <Settings className="w-5 h-5" />
                       </button>
@@ -199,14 +227,14 @@ export default function Header() {
                     <button
                       onClick={() => navigate("/kabinet")}
                       className="p-2 text-gray-600 hover:text-brand-dark transition hover:scale-110 active:scale-95"
-                      title={profile?.full_name || "Кабинет"}
+                      title={profile?.full_name || t('header.cabinet')}
                     >
                       <User className="w-5 h-5" />
                     </button>
                     <button
                       onClick={handleSignOut}
                       className="p-2 text-gray-600 hover:text-red-500 transition hover:scale-110 active:scale-95"
-                      title="Выйти"
+                      title={t('header.logout')}
                     >
                       <LogOut className="w-5 h-5" />
                     </button>
@@ -216,7 +244,7 @@ export default function Header() {
                     onClick={() => navigate("/vkhod")}
                     className="hidden md:block px-5 py-2 bg-brand text-gray-900 rounded font-semibold hover:bg-brand-dark transition hover:scale-105 active:scale-95"
                   >
-                    Войти
+                    {t('header.login')}
                   </button>
                 )}
 
@@ -224,7 +252,7 @@ export default function Header() {
                 <button
                   onClick={() => setMenuOpen((o) => !o)}
                   className="md:hidden p-2 text-gray-600 hover:text-brand-dark transition active:scale-95"
-                  aria-label="Меню"
+                  aria-label={t('header.menu')}
                 >
                   {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
@@ -259,6 +287,26 @@ export default function Header() {
                 </span>
               );
             })}
+
+            {/* Mobile language switcher */}
+            <div className="flex items-center space-x-2 px-4 py-3">
+              <button
+                onClick={() => handleLangSwitch('ru')}
+                className={`text-sm font-semibold px-2 py-1 rounded transition ${
+                  lang === 'ru' ? 'bg-gray-200 text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                RU
+              </button>
+              <button
+                onClick={() => handleLangSwitch('ro')}
+                className={`text-sm font-semibold px-2 py-1 rounded transition ${
+                  lang === 'ro' ? 'bg-gray-200 text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                RO
+              </button>
+            </div>
           </nav>
 
           <div className="border-t border-gray-100 px-4 py-4">
@@ -272,7 +320,7 @@ export default function Header() {
                   className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                 >
                   <User className="w-5 h-5" />
-                  <span className="font-medium">Личный кабинет</span>
+                  <span className="font-medium">{t('header.personalCabinet')}</span>
                 </button>
                 {isAdmin && (
                   <button
@@ -280,7 +328,7 @@ export default function Header() {
                     className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition"
                   >
                     <Settings className="w-5 h-5" />
-                    <span className="font-medium">Админ панель</span>
+                    <span className="font-medium">{t('header.adminPanelFull')}</span>
                   </button>
                 )}
                 <button
@@ -288,7 +336,7 @@ export default function Header() {
                   className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition"
                 >
                   <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Выйти</span>
+                  <span className="font-medium">{t('header.logout')}</span>
                 </button>
               </div>
             ) : (
@@ -296,7 +344,7 @@ export default function Header() {
                 onClick={() => navigate("/vkhod")}
                 className="w-full py-3 bg-brand text-gray-900 rounded-lg font-semibold hover:bg-brand-dark transition active:scale-95"
               >
-                Войти
+                {t('header.login')}
               </button>
             )}
           </div>

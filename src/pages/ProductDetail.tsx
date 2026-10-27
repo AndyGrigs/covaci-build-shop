@@ -9,11 +9,13 @@ import { useAppNav } from '../hooks/useAppNav';
 import type { ProductLoaderData } from '../lib/productLoader';
 import Seo from '../components/Seo';
 import NotFound from './NotFound';
+import { useTranslation } from 'react-i18next';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
 
 export default function ProductDetail() {
+  const { t } = useTranslation();
   const { slug: productSlug } = useParams<{ slug: string }>();
   const onNavigate = useAppNav();
   const { user } = useAuth();
@@ -103,7 +105,7 @@ export default function ProductDetail() {
       <div className="max-w-7xl mx-auto px-4 py-16 flex justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand mx-auto mb-4" />
-          <p className="text-gray-500">Загрузка...</p>
+          <p className="text-gray-500">{t('product.loading')}</p>
         </div>
       </div>
     );
@@ -119,7 +121,7 @@ export default function ProductDetail() {
         title={product.name}
         description={(
           product.description?.trim() ||
-          `${product.name} в ${BRAND_NAME}: цена и наличие.`
+          t('product.seoDesc', { name: product.name, brand: BRAND_NAME })
         ).slice(0, 160)}
         path={`/tovar/${product.slug}`}
         image={images[0]}
@@ -146,9 +148,9 @@ export default function ProductDetail() {
 
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-        <Link to="/" className="hover:text-gray-700 transition">Главная</Link>
+        <Link to="/" className="hover:text-gray-700 transition">{t('product.home')}</Link>
         <span>/</span>
-        <Link to="/catalog" className="hover:text-gray-700 transition">Каталог</Link>
+        <Link to="/catalog" className="hover:text-gray-700 transition">{t('product.catalog')}</Link>
         {category && (
           <>
             <span>/</span>
@@ -167,14 +169,13 @@ export default function ProductDetail() {
         className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition mb-8 group"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-        <span className="font-medium">Назад в каталог</span>
+        <span className="font-medium">{t('product.back')}</span>
       </Link>
 
       <div className="grid lg:grid-cols-2 gap-12">
 
-        {/* ── Gallery ── */}
+        {/* Gallery */}
         <div>
-          {/* Main image */}
           <div className="relative bg-gray-100 rounded-2xl overflow-hidden aspect-square mb-4 group">
             {images.length > 0 ? (
               <img
@@ -186,11 +187,10 @@ export default function ProductDetail() {
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                 <Package className="w-24 h-24 mb-2" />
-                <span className="text-sm">Нет фото</span>
+                <span className="text-sm">{t('product.noPhoto')}</span>
               </div>
             )}
 
-            {/* Prev / Next arrows */}
             {images.length > 1 && (
               <>
                 <button
@@ -205,7 +205,6 @@ export default function ProductDetail() {
                 >
                   <ChevronRight className="w-5 h-5 text-gray-700" />
                 </button>
-                {/* Dot indicator */}
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5">
                   {images.map((_, i) => (
                     <button
@@ -221,7 +220,6 @@ export default function ProductDetail() {
             )}
           </div>
 
-          {/* Thumbnails */}
           {images.length > 1 && (
             <div className="flex space-x-3 overflow-x-auto pb-1">
               {images.map((src, i) => (
@@ -234,51 +232,48 @@ export default function ProductDetail() {
                       : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={src} alt={`фото ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={src} alt={`photo ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* ── Product info ── */}
+        {/* Product info */}
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
 
-          {/* Stock badge */}
           <span className={`self-start text-sm px-3 py-1 rounded-full font-medium mb-6 ${
             product.stock_quantity > 0
               ? 'bg-green-100 text-green-700'
               : 'bg-red-100 text-red-700'
           }`}>
-            {product.stock_quantity > 0 ? `В наличии: ${product.stock_quantity} ${product.unit}` : 'Нет в наличии'}
+            {product.stock_quantity > 0
+              ? t('product.inStock', { count: product.stock_quantity, unit: product.unit })
+              : t('product.outOfStock')}
           </span>
 
-          {/* Price */}
           <div className="flex items-baseline space-x-2 mb-8">
             <span className="text-4xl font-black text-yellow-600">{product.price.toFixed(2)} MDL</span>
             <span className="text-lg text-gray-500">/ {product.unit}</span>
           </div>
 
-          {/* Description */}
           {product.description && (
             <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Описание</h2>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('product.description')}</h2>
               <p className="text-gray-700 leading-relaxed">{product.description}</p>
             </div>
           )}
 
-          {/* Category */}
           {category && (
             <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Категория</h2>
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('product.category')}</h2>
               <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
                 {category.name}
               </span>
             </div>
           )}
 
-          {/* Add to cart */}
           <button
             onClick={addToCart}
             disabled={product.stock_quantity === 0 || addingToCart}
@@ -290,7 +285,7 @@ export default function ProductDetail() {
           >
             <ShoppingCart className="w-6 h-6" />
             <span>
-              {addingToCart ? 'Добавление...' : added ? 'Добавлено!' : 'Добавить в корзину'}
+              {addingToCart ? t('product.adding') : added ? t('product.added') : t('product.addToCart')}
             </span>
           </button>
         </div>
