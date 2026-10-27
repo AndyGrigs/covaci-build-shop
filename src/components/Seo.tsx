@@ -34,6 +34,7 @@ export default function Seo({
 
   return (
     <Head>
+      <html lang={isRo ? 'ro' : 'ru'} />
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
