@@ -10,6 +10,7 @@ import type { CatalogLoaderData } from '../lib/catalogLoader';
 import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
 import { useLangPath } from '../hooks/useLang';
+import { locName, locDesc } from '../lib/localized';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -125,10 +126,10 @@ function ProductsView() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Seo
-        title={activeCategory ? activeCategory.name : t('products.seoTitle')}
+        title={activeCategory ? locName(activeCategory) : t('products.seoTitle')}
         description={
           activeCategory
-            ? t('products.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
+            ? t('products.seoCatDesc', { name: locName(activeCategory), brand: BRAND_NAME })
             : t('products.seoDesc', { brand: BRAND_NAME })
         }
         path={lp(activeCategory ? `/catalog/${activeCategory.slug}` : '/catalog')}
@@ -151,7 +152,7 @@ function ProductsView() {
             ...(activeCategory ? [{
               '@type': 'ListItem',
               position: 3,
-              name: activeCategory.name,
+              name: locName(activeCategory),
               item: `${BRAND_URL}/catalog/${activeCategory.slug}`,
             }] : []),
           ],
@@ -211,7 +212,7 @@ function ProductsView() {
                         : 'hover:bg-gray-100'
                     }`}
                   >
-                    {category.name}
+                    {locName(category)}
                   </Link>
                 ))}
               </div>
@@ -240,23 +241,23 @@ function ProductsView() {
                     {product.images?.[0] ? (
                       <img
                         src={product.images[0]}
-                        alt={product.name}
+                        alt={locName(product)}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <span className="text-gray-400 text-4xl font-bold">
-                        {product.name.charAt(0)}
+                        {locName(product).charAt(0)}
                       </span>
                     )}
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       <Link to={lp(`/tovar/${product.slug}`)} className="after:absolute after:inset-0">
-                        {product.name}
+                        {locName(product)}
                       </Link>
                     </h3>
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {product.description}
+                      {locDesc(product)}
                     </p>
                     <div className="flex items-baseline justify-between mb-3">
                       <div>

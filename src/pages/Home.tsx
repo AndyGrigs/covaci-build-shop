@@ -15,6 +15,7 @@ import type { HomeLoaderData } from "../lib/homeLoader";
 import { BRAND_NAME, BRAND_URL, BRAND_PHONE } from "../lib/brand";
 import { useTranslation } from "react-i18next";
 import { useLangPath } from "../hooks/useLang";
+import { locName } from "../lib/localized";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -243,13 +244,13 @@ export default function Home() {
                     <div className="h-36 overflow-hidden bg-gray-50">
                       <img
                         src={getCategoryImage(category)}
-                        alt={category.name}
+                        alt={locName(category)}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-3">
                       <p className="text-sm font-semibold text-gray-800 leading-tight mb-1">
-                        {category.name}
+                        {locName(category)}
                       </p>
                       <div className="flex items-center justify-end">
                         <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
@@ -312,14 +313,14 @@ export default function Home() {
                       <div className="h-44 bg-gray-50 overflow-hidden">
                         <img
                           src={getEquipmentImage(item)}
-                          alt={item.name}
+                          alt={locName(item)}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         />
                       </div>
 
                       <div className="p-4">
                         <h3 className="font-semibold text-gray-800 text-sm mb-2 leading-tight">
-                          {item.name}
+                          {locName(item)}
                         </h3>
                         <p className="text-yellow-500 font-bold text-sm mb-3">
                           от {item.daily_rate.toLocaleString("ru-RU")} MDL

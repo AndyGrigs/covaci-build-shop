@@ -11,6 +11,7 @@ import type { EquipmentLoaderData } from '../lib/equipmentLoader';
 import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
 import { useLangPath } from '../hooks/useLang';
+import { locName, locDesc } from '../lib/localized';
 
 type Equipment = Database['public']['Tables']['equipment']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -172,10 +173,10 @@ function EquipmentView() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Seo
-        title={activeCategory ? activeCategory.name : t('equipment.seoTitle')}
+        title={activeCategory ? locName(activeCategory) : t('equipment.seoTitle')}
         description={
           activeCategory
-            ? t('equipment.seoCatDesc', { name: activeCategory.name, brand: BRAND_NAME })
+            ? t('equipment.seoCatDesc', { name: locName(activeCategory), brand: BRAND_NAME })
             : t('equipment.seoDesc', { brand: BRAND_NAME })
         }
         path={lp(activeCategory ? `/arenda-tehniki/${activeCategory.slug}` : '/arenda-tehniki')}
@@ -234,7 +235,7 @@ function EquipmentView() {
                         : 'hover:bg-gray-100'
                     }`}
                   >
-                    {category.name}
+                    {locName(category)}
                   </Link>
                 ))}
               </div>
@@ -263,19 +264,19 @@ function EquipmentView() {
                     {item.images?.[0] ? (
                       <img
                         src={item.images[0]}
-                        alt={item.name}
+                        alt={locName(item)}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <span className="text-green-700 text-4xl font-bold">
-                        {item.name.charAt(0)}
+                        {locName(item).charAt(0)}
                       </span>
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{locName(item)}</h3>
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {item.description}
+                      {locDesc(item)}
                     </p>
                     <div className="mb-3">
                       <div className="flex items-baseline justify-between mb-1">
@@ -320,7 +321,7 @@ function EquipmentView() {
             </div>
 
             <div className="mb-4">
-              <h4 className="font-semibold text-lg mb-2">{selectedEquipment.name}</h4>
+              <h4 className="font-semibold text-lg mb-2">{locName(selectedEquipment)}</h4>
               <div className="text-sm text-gray-600 space-y-1">
                 <p>{t('equipment.rentalDailyRate')} {selectedEquipment.daily_rate.toFixed(2)} MDL</p>
                 <p>{t('equipment.depositRequired')} {selectedEquipment.deposit_amount.toFixed(2)} MDL</p>

@@ -7,6 +7,7 @@ import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import { useTranslation } from 'react-i18next';
+import { locName } from '../lib/localized';
 
 type CartItem = Database['public']['Tables']['cart_items']['Row'] & {
   products: Database['public']['Tables']['products']['Row'];
@@ -160,19 +161,19 @@ export default function Cart() {
                 {item.products.images?.[0] ? (
                   <img
                     src={item.products.images[0]}
-                    alt={item.products.name}
+                    alt={locName(item.products)}
                     className="w-full h-full object-cover rounded-lg"
                   />
                 ) : (
                   <span className="text-gray-400 text-2xl font-bold">
-                    {item.products.name.charAt(0)}
+                    {locName(item.products).charAt(0)}
                   </span>
                 )}
               </div>
 
               <div className="flex-grow">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                  {item.products.name}
+                  {locName(item.products)}
                 </h3>
                 <p className="text-sm text-gray-600 mb-2">
                   {item.products.price.toFixed(2)} MDL / {item.products.unit}

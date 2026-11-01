@@ -11,6 +11,7 @@ import Seo from '../components/Seo';
 import NotFound from './NotFound';
 import { useTranslation } from 'react-i18next';
 import { useLangPath } from '../hooks/useLang';
+import { locName, locDesc } from '../lib/localized';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -120,10 +121,10 @@ export default function ProductDetail() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Seo
-        title={product.name}
+        title={locName(product)}
         description={(
-          product.description?.trim() ||
-          t('product.seoDesc', { name: product.name, brand: BRAND_NAME })
+          locDesc(product).trim() ||
+          t('product.seoDesc', { name: locName(product), brand: BRAND_NAME })
         ).slice(0, 160)}
         path={lp(`/tovar/${product.slug}`)}
         image={images[0]}
@@ -131,10 +132,10 @@ export default function ProductDetail() {
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Product',
-          name: product.name,
-          description: product.description ?? undefined,
+          name: locName(product),
+          description: locDesc(product) || undefined,
           image: images.length > 0 ? images : undefined,
-          category: category?.name,
+          category: category ? locName(category) : undefined,
           offers: {
             '@type': 'Offer',
             url: `https://den-alex.com/tovar/${product.slug}`,
@@ -157,12 +158,12 @@ export default function ProductDetail() {
           <>
             <span>/</span>
             <Link to={lp(`/catalog/${category.slug}`)} className="hover:text-gray-700 transition">
-              {category.name}
+              {locName(category)}
             </Link>
           </>
         )}
         <span>/</span>
-        <span className="text-gray-900 font-medium truncate max-w-[200px]">{product.name}</span>
+        <span className="text-gray-900 font-medium truncate max-w-[200px]">{locName(product)}</span>
       </nav>
 
       {/* Back button */}
@@ -183,7 +184,7 @@ export default function ProductDetail() {
               <img
                 key={activeIndex}
                 src={images[activeIndex]}
-                alt={product.name}
+                alt={locName(product)}
                 className="w-full h-full object-cover transition-opacity duration-300"
               />
             ) : (
@@ -243,7 +244,7 @@ export default function ProductDetail() {
 
         {/* Product info */}
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">{locName(product)}</h1>
 
           <span className={`self-start text-sm px-3 py-1 rounded-full font-medium mb-6 ${
             product.stock_quantity > 0
@@ -260,10 +261,10 @@ export default function ProductDetail() {
             <span className="text-lg text-gray-500">/ {product.unit}</span>
           </div>
 
-          {product.description && (
+          {locDesc(product) && (
             <div className="mb-8">
               <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('product.description')}</h2>
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+              <p className="text-gray-700 leading-relaxed">{locDesc(product)}</p>
             </div>
           )}
 
@@ -271,7 +272,7 @@ export default function ProductDetail() {
             <div className="mb-8">
               <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('product.category')}</h2>
               <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                {category.name}
+                {locName(category)}
               </span>
             </div>
           )}

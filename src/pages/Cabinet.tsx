@@ -6,6 +6,7 @@ import { User, Package, Calendar, Edit, Save, Settings } from 'lucide-react';
 import type { Database } from '../types/database';
 import { useAppNav } from '../hooks/useAppNav';
 import { useTranslation } from 'react-i18next';
+import { locName } from '../lib/localized';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   order_items: (Database['public']['Tables']['order_items']['Row'] & {
@@ -320,7 +321,7 @@ export default function Cabinet() {
                   {order.order_items.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <span>
-                        {item.products?.name || t('cabinet.product')} x {item.quantity}
+                        {(item.products && locName(item.products)) || t('cabinet.product')} x {item.quantity}
                       </span>
                       <span className="font-medium">{item.subtotal.toFixed(2)} MDL</span>
                     </div>
@@ -358,7 +359,7 @@ export default function Cabinet() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {rental.equipment_name || rental.equipment?.name || t('cabinet.equipment')}
+                      {rental.equipment_name || (rental.equipment && locName(rental.equipment)) || t('cabinet.equipment')}
                     </h3>
                     <p className="text-sm text-gray-600">
                       {t('cabinet.requested')} {new Date(rental.created_at ?? '').toLocaleDateString()}
