@@ -46,12 +46,15 @@ export default function AdminDashboard() {
   );
   const [newCategory, setNewCategory] = useState({
   name: "",
+  name_ro: "",
   type: "product" as "product" | "equipment",
   image_url: "",
 });
   const [newProduct, setNewProduct] = useState({
     name: "",
+    name_ro: "",
     description: "",
+    description_ro: "",
     price: "",
     unit: "",
     stock_quantity: "",
@@ -60,7 +63,9 @@ export default function AdminDashboard() {
   });
   const [newEquipment, setNewEquipment] = useState({
     name: "",
+    name_ro: "",
     description: "",
+    description_ro: "",
     daily_rate: "",
     deposit_amount: "",
     images: ["", "", "", ""] as string[],
@@ -141,6 +146,7 @@ export default function AdminDashboard() {
   .from("categories")
   .insert([{
     name: newCategory.name,
+    name_ro: newCategory.name_ro || null,
     type: newCategory.type,
     image_url: newCategory.image_url || null,
   }])
@@ -151,7 +157,7 @@ if (error) {
   console.error("Error adding category:", error);
 } else if (data) {
   setCategories([...categories, data]);
-  setNewCategory({ name: "", type: "product", image_url: "" });
+  setNewCategory({ name: "", name_ro: "", type: "product", image_url: "" });
 }
   };
 
@@ -162,6 +168,7 @@ if (error) {
   .from("categories")
   .update({
     name: editingCategory.name,
+    name_ro: editingCategory.name_ro || null,
     type: editingCategory.type,
     image_url: editingCategory.image_url || null,
   })
@@ -208,7 +215,9 @@ if (error) {
       .insert([
         {
           name: newProduct.name,
+          name_ro: newProduct.name_ro || null,
           description: newProduct.description,
+          description_ro: newProduct.description_ro || null,
           price: parseFloat(newProduct.price) || 0,
           unit: newProduct.unit,
           stock_quantity: parseInt(newProduct.stock_quantity) || 0,
@@ -227,7 +236,9 @@ if (error) {
       setProducts([...products, data]);
       setNewProduct({
         name: "",
+        name_ro: "",
         description: "",
+        description_ro: "",
         price: "",
         unit: "",
         stock_quantity: "",
@@ -246,7 +257,9 @@ if (error) {
       .from("products")
       .update({
         name: editingProduct.name,
+        name_ro: editingProduct.name_ro || null,
         description: editingProduct.description,
+        description_ro: editingProduct.description_ro || null,
         price: editingProduct.price,
         unit: editingProduct.unit,
         stock_quantity: editingProduct.stock_quantity,
@@ -293,7 +306,9 @@ if (error) {
       .insert([
         {
           name: newEquipment.name,
+          name_ro: newEquipment.name_ro || null,
           description: newEquipment.description,
+          description_ro: newEquipment.description_ro || null,
           daily_rate: parseFloat(newEquipment.daily_rate) || 0,
           deposit_amount: parseFloat(newEquipment.deposit_amount) || 0,
           images,
@@ -311,7 +326,9 @@ if (error) {
       setEquipment([...equipment, data]);
       setNewEquipment({
         name: "",
+        name_ro: "",
         description: "",
+        description_ro: "",
         daily_rate: "",
         deposit_amount: "",
         images: ["", "", "", ""] as string[],
@@ -330,7 +347,9 @@ if (error) {
       .from("equipment")
       .update({
         name: editingEquipment.name,
+        name_ro: editingEquipment.name_ro || null,
         description: editingEquipment.description,
+        description_ro: editingEquipment.description_ro || null,
         daily_rate: editingEquipment.daily_rate,
         deposit_amount: editingEquipment.deposit_amount,
         images,
@@ -562,7 +581,16 @@ if (error) {
                         onChange={(e) =>
                           setNewCategory({ ...newCategory, name: e.target.value })
                         }
-                        placeholder="Название категории"
+                        placeholder="Название категории (RU)"
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-72"
+                      />
+                      <input
+                        type="text"
+                        value={newCategory.name_ro}
+                        onChange={(e) =>
+                          setNewCategory({ ...newCategory, name_ro: e.target.value })
+                        }
+                        placeholder="Denumire categorie (RO)"
                         className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-72"
                       />
                     </div>
@@ -621,17 +649,32 @@ if (error) {
                         {editingCategory?.id === category.id ? (
                           <>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <input
-                                type="text"
-                                value={editingCategory.name}
-                                onChange={(e) =>
-                                  setEditingCategory({
-                                    ...editingCategory,
-                                    name: e.target.value,
-                                  })
-                                }
-                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
-                              />
+                              <div className="flex flex-col gap-1">
+                                <input
+                                  type="text"
+                                  value={editingCategory.name}
+                                  onChange={(e) =>
+                                    setEditingCategory({
+                                      ...editingCategory,
+                                      name: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Название (RU)"
+                                  className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                                />
+                                <input
+                                  type="text"
+                                  value={editingCategory.name_ro ?? ""}
+                                  onChange={(e) =>
+                                    setEditingCategory({
+                                      ...editingCategory,
+                                      name_ro: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Denumire (RO)"
+                                  className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                                />
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <select
@@ -682,6 +725,9 @@ if (error) {
                           <>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {category.name}
+                              {!category.name_ro && (
+                                <span className="ml-2 text-xs text-amber-600" title="Нет румынского перевода">RO ✗</span>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
                               {category.type}
@@ -739,7 +785,16 @@ if (error) {
                     onChange={(e) =>
                       setNewProduct({ ...newProduct, name: e.target.value })
                     }
-                    placeholder="Название"
+                    placeholder="Название (RU)"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={newProduct.name_ro}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, name_ro: e.target.value })
+                    }
+                    placeholder="Denumire (RO)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
@@ -751,7 +806,19 @@ if (error) {
                         description: e.target.value,
                       })
                     }
-                    placeholder="Описание"
+                    placeholder="Описание (RU)"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={newProduct.description_ro}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        description_ro: e.target.value,
+                      })
+                    }
+                    placeholder="Descriere (RO)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
@@ -970,6 +1037,9 @@ if (error) {
                           <>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {product.name}
+                              {!product.name_ro && (
+                                <span className="ml-2 text-xs text-amber-600" title="Нет румынского перевода">RO ✗</span>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {product.price.toFixed(2)} MDL
@@ -1011,6 +1081,35 @@ if (error) {
                       {editingProduct?.id === product.id && (
                         <tr className="bg-gray-50">
                           <td colSpan={7} className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-700 mb-2">
+                              Румынский перевод
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                              <input
+                                type="text"
+                                value={editingProduct.name_ro ?? ""}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    name_ro: e.target.value,
+                                  })
+                                }
+                                placeholder="Denumire (RO)"
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              />
+                              <input
+                                type="text"
+                                value={editingProduct.description_ro ?? ""}
+                                onChange={(e) =>
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    description_ro: e.target.value,
+                                  })
+                                }
+                                placeholder="Descriere (RO)"
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              />
+                            </div>
                             <p className="text-sm font-medium text-gray-700 mb-2">
                               Фотографии (первое — главное)
                             </p>
@@ -1059,7 +1158,16 @@ if (error) {
                     onChange={(e) =>
                       setNewEquipment({ ...newEquipment, name: e.target.value })
                     }
-                    placeholder="Название"
+                    placeholder="Название (RU)"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={newEquipment.name_ro}
+                    onChange={(e) =>
+                      setNewEquipment({ ...newEquipment, name_ro: e.target.value })
+                    }
+                    placeholder="Denumire (RO)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
@@ -1071,7 +1179,19 @@ if (error) {
                         description: e.target.value,
                       })
                     }
-                    placeholder="Описание"
+                    placeholder="Описание (RU)"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    value={newEquipment.description_ro}
+                    onChange={(e) =>
+                      setNewEquipment({
+                        ...newEquipment,
+                        description_ro: e.target.value,
+                      })
+                    }
+                    placeholder="Descriere (RO)"
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
@@ -1303,6 +1423,9 @@ if (error) {
                           <>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {item.name}
+                              {!item.name_ro && (
+                                <span className="ml-2 text-xs text-amber-600" title="Нет румынского перевода">RO ✗</span>
+                              )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {item.daily_rate.toFixed(2)} MDL
@@ -1344,6 +1467,35 @@ if (error) {
                       {editingEquipment?.id === item.id && (
                         <tr className="bg-gray-50">
                           <td colSpan={7} className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-700 mb-2">
+                              Румынский перевод
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
+                              <input
+                                type="text"
+                                value={editingEquipment.name_ro ?? ""}
+                                onChange={(e) =>
+                                  setEditingEquipment({
+                                    ...editingEquipment,
+                                    name_ro: e.target.value,
+                                  })
+                                }
+                                placeholder="Denumire (RO)"
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              />
+                              <input
+                                type="text"
+                                value={editingEquipment.description_ro ?? ""}
+                                onChange={(e) =>
+                                  setEditingEquipment({
+                                    ...editingEquipment,
+                                    description_ro: e.target.value,
+                                  })
+                                }
+                                placeholder="Descriere (RO)"
+                                className="border border-gray-300 rounded-lg px-3 py-1 text-sm w-full"
+                              />
+                            </div>
                             <p className="text-sm font-medium text-gray-700 mb-2">
                               Фотографии (первое — главное)
                             </p>

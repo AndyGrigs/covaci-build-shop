@@ -84,7 +84,9 @@ function ProductsView() {
     return allProducts.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q),
+        p.name_ro?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.description_ro?.toLowerCase().includes(q),
     );
   }, [allProducts, searchTerm]);
 
