@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getLanguage } from '../i18n';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -15,7 +16,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/novyy-parol`,
+      redirectTo: `${window.location.origin}/novyy-parol?lang=${getLanguage()}`,
     });
 
     setLoading(false);

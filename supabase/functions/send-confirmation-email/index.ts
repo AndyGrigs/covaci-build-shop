@@ -63,6 +63,16 @@ function buildActionUrl(tokenHash: string, type: string, redirectTo: string): st
   return `${SUPABASE_URL}/auth/v1/verify?token=${tokenHash}&type=${type}&redirect_to=${encodeURIComponent(redirectTo)}`
 }
 
+// GoTrue's webhook payload carries no language — we embedded it in redirect_to ourselves.
+function detectLang(redirectTo: string): Lang {
+  try {
+    const v = new URL(redirectTo).searchParams.get('lang')
+    return v === 'ro' ? 'ro' : 'ru'
+  } catch {
+    return 'ru'
+  }
+}
+
 // All user-visible strings, keyed by language.
 const T = {
   ru: {
@@ -131,10 +141,10 @@ const T = {
 
 function buildEmailContent(payload: EmailHookPayload): { subject: string; html: string } {
   const { user, email_data } = payload
-  const fullName = user.user_metadata?.full_name ?? (payload.user.user_metadata?.locale === 'ro' ? 'Client' : 'Пользователь')
-  const lang: Lang = (user.user_metadata?.locale === 'ro' ? 'ro' : 'ru')
-  const s = T[lang]
   const { email_action_type, token_hash, token_hash_new, redirect_to } = email_data
+  const lang: Lang = detectLang(redirect_to)
+  const fullName = user.user_metadata?.full_name ?? (lang === 'ro' ? 'Client' : 'Пользователь')
+  const s = T[lang]
 
   switch (email_action_type) {
     case 'signup':

@@ -1,7 +1,9 @@
+import { emailText } from './emailText.ts'
+
 export type Lang = 'ru' | 'ro'
 
 export type RenderEmailOpts = {
-  lang?: Lang
+  lang: Lang
   greeting: string
   body: string
   /** Optional HTML block inserted between the body paragraph and the button */
@@ -11,17 +13,11 @@ export type RenderEmailOpts = {
   footer: string
 }
 
-const TAGLINE: Record<Lang, string> = {
-  ru: 'Строительные материалы и оборудование',
-  ro: 'Materiale de construcție și utilaje',
-}
-
 export function renderEmail(opts: RenderEmailOpts): string {
-  const lang = opts.lang ?? 'ru'
-  const tagline = TAGLINE[lang]
+  const tagline = emailText[opts.lang].tagline
 
   return `<!DOCTYPE html>
-<html lang="${lang}">
+<html lang="${opts.lang}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

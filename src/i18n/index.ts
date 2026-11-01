@@ -24,3 +24,11 @@ i18nRo.use(initReactI18next).init({ ...baseConfig, lng: 'ro' });
 
 export { i18nRo };
 export default i18next; // Russian / global
+
+/** Current language, read from ?lang= (auth pages) or the /ro path prefix (content pages). */
+export function getLanguage(): 'ru' | 'ro' {
+  if (typeof window === 'undefined') return 'ru';
+  const param = new URLSearchParams(window.location.search).get('lang');
+  if (param === 'ro') return 'ro';
+  return window.location.pathname.startsWith('/ro') ? 'ro' : 'ru';
+}

@@ -38,11 +38,19 @@ export default function Header() {
     { label: t('nav.contacts'), path: lang === 'ro' ? '/ro/kontakt' : '/kontakt' },
   ];
 
-  const switchLang = (target: 'ru' | 'ro') => {
+  const switchLang = async (target: 'ru' | 'ro') => {
     if (target === lang) return;
     const currentPath = location.pathname;
     const newPath = target === 'ro' ? toRoPath(currentPath) : toRuPath(currentPath);
     navigate(newPath);
+
+    // localStorage/URL — язык интерфейса в этом браузере; profiles.locale — язык писем
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({ locale: target })
+        .eq('id', user.id);
+    }
   };
 
   useEffect(() => {
